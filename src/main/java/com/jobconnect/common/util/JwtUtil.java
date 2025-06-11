@@ -3,7 +3,10 @@ package com.jobconnect.common.util;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.jobconnect.common.exception.InvalidJwtTokenException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 
@@ -30,13 +33,17 @@ public class JwtUtil {
 
     public static DecodedJWT verifyToken(String token) {
         try {
-            return JWT.require(getAlgorithm())
+            DecodedJWT decodedJWT =  JWT.require(getAlgorithm())
                     .withIssuer("JobConnect")
                     .build()
                     .verify(token);
+            if (decodedJWT == null) {
+                throw new InvalidJwtTokenException("Invalid JWT token");
+            }
+            return decodedJWT;
         } catch (Exception e) {
             log.error("Token verification failed: {}", e.getMessage());
-            return null;
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "JWT validation failed", e);
         }
     }
 
@@ -47,6 +54,7 @@ public class JwtUtil {
 
     public static String getRoleFromToken(String token) {
         DecodedJWT decodedJWT = verifyToken(token);
+
         return decodedJWT.getClaim("role").asString();
     }
 
@@ -57,5 +65,20 @@ public class JwtUtil {
 
     public static Algorithm getAlgorithm() {
         return Algorithm.HMAC256(SECRET_KEY);
+    }
+
+    public static Long getAccessTokenExpiration(String token) {
+        DecodedJWT decodedJWT = verifyToken(token);
+        return decodedJWT.getExpiresAt().getTime() - System.currentTimeMillis();
+    }
+
+    public static boolean isValidToken(String token) {
+        try {
+            verifyToken(token);
+            return true;
+        } catch (ResponseStatusException e) {
+            log.error("Invalid JWT token: {}", e.getReason());
+            return false;
+        }
     }
 }

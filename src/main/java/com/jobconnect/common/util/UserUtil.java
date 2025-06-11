@@ -1,9 +1,10 @@
 package com.jobconnect.common.util;
 
 import com.jobconnect.auth.dto.UserRequest;
+import com.jobconnect.auth.dto.UserResponse;
 import com.jobconnect.auth.entity.Role;
 import com.jobconnect.auth.entity.User;
-import com.jobconnect.auth.security.SecurityConfig;
+import com.jobconnect.config.SecurityConfig;
 
 import java.util.Date;
 
@@ -24,6 +25,17 @@ public class UserUtil {
         user.setCreatedAt(new Date());
         user.setRole(role);
         return user;
+    }
+
+    public static UserResponse convertToUserResponse(User user){
+        return new UserResponse(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole().getName().toString(),
+                user.isActive() ? "Active" : "Inactive"
+        );
     }
 
 }

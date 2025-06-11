@@ -1,17 +1,24 @@
 package com.jobconnect.auth.service.impl;
 
-import com.jobconnect.auth.dto.UserRequest;
+import com.jobconnect.auth.dto.*;
 import com.jobconnect.auth.entity.User;
-import com.jobconnect.auth.security.SecurityConfig;
+import com.jobconnect.common.exception.InvalidCredentialsException;
+import com.jobconnect.common.exception.InvalidOtpException;
+import com.jobconnect.common.exception.UserNotFoundException;
+import com.jobconnect.config.SecurityConfig;
 import com.jobconnect.auth.service.RoleService;
 import com.jobconnect.auth.service.UserService;
 import com.jobconnect.common.util.JwtUtil;
 import com.jobconnect.common.util.OtpUtil;
 import com.jobconnect.common.util.UserUtil;
 import com.jobconnect.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final RoleService roleService;
@@ -23,30 +30,56 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByEmail(String email) {
-        return userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+    public UserResponse getUserByEmail(String email) {
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
+        return UserUtil.convertToUserResponse(user);
     }
 
     @Override
-    public User registerUser(UserRequest userRequest) {
-        User newUser = UserUtil.convertToUser(userRequest, roleService.getRoleByName(userRequest.role()));
-        return userRepository.save(newUser);
+    public UserResponse registerUser(UserRequest userRequest) {
+        User user = UserUtil.convertToUser(userRequest, roleService.getRoleByName(userRequest.role()));
+        User savedUser = userRepository.save(user);
+        return UserUtil.convertToUserResponse(savedUser);
     }
 
     @Override
-    public String verifyUser(String email, String password) {
-        User user = getUserByEmail(email);
+    public LoginResponse verifyUser(LoginRequest loginRequest) {
 
-        return SecurityConfig.passwordEncoder().matches(password, user.getPassword())
-                ? OtpUtil.generateOtp(user.getTotpSecret())
-                : "Incorrect password";
+        User user = userRepository.findUserByEmail(loginRequest.email()).orElseThrow(
+                () -> new UserNotFoundException(loginRequest.email())
+        );
+
+        if(!SecurityConfig.passwordEncoder().matches(loginRequest.password(), user.getPassword())) {
+            throw new InvalidCredentialsException();
+        }
+        String otp = OtpUtil.generateOtp(user.getTotpSecret());
+        return new LoginResponse(user.getEmail(), otp);
     }
 
     @Override
-    public String verifyOtp(String email, String otp) {
-        User user = getUserByEmail(email);
-        return OtpUtil.validateOtp(user.getTotpSecret(), otp) ? JwtUtil.generateJwtToken(user.getEmail(), String.valueOf(user.getRole().getName()), "new" ) : "Invalid OTP";
+    public AuthResponse verifyOtp(OtpRequest otpRequest) {
+
+        User user = userRepository.findUserByEmail(otpRequest.email()).orElseThrow(
+                () -> new UserNotFoundException(otpRequest.email())
+        );
+
+        if(!OtpUtil.validateOtp(user.getTotpSecret(),otpRequest.otp())){
+            throw new InvalidOtpException();
+        }
+
+        String jwtToken = JwtUtil.generateJwtToken(user.getEmail(), user.getRole().getName().toString(), "new");
+        log.info("Generated JWT token for user: {}", user.getEmail());
+
+        return new AuthResponse(jwtToken,"Bearer", JwtUtil.getAccessTokenExpiration(jwtToken));
+    }
+
+    @Override
+    public List<UserResponse> getAllUsers(Pageable pageable) {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(UserUtil::convertToUserResponse)
+                .toList();
     }
 
 }

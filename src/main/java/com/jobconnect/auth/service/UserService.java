@@ -1,15 +1,18 @@
 package com.jobconnect.auth.service;
 
-import com.jobconnect.auth.dto.UserRequest;
-import com.jobconnect.auth.entity.User;
+import com.jobconnect.auth.dto.*;
+import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
 
-    User registerUser(UserRequest userRequest);
+    UserResponse registerUser(UserRequest userRequest);
 
-    User getUserByEmail(String email);
+    UserResponse getUserByEmail(String email);
 
-    String verifyUser(String email, String password);
+    LoginResponse verifyUser(LoginRequest loginRequest);
 
-    String verifyOtp(String email, String otp);
+    AuthResponse verifyOtp(OtpRequest otpRequest);
+
+    List<UserResponse> getAllUsers(Pageable pageable);
 }

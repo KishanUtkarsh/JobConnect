@@ -1,0 +1,59 @@
+package com.jobconnect.common.exception;
+
+import com.jobconnect.common.dto.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.ServerWebExchange;
+
+import java.time.Instant;
+
+@RestControllerAdvice
+@Slf4j
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex, ServerWebExchange exchange) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), exchange);
+    }
+
+    @ExceptionHandler(InvalidOtpException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidOtpException(InvalidOtpException ex, ServerWebExchange exchange) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), exchange);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException ex, ServerWebExchange exchange) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), exchange);
+    }
+
+    @ExceptionHandler(InvalidJwtTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidJwtTokenException(InvalidJwtTokenException ex, ServerWebExchange exchange) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), exchange);
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex, ServerWebExchange exchange) {
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), exchange);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, ServerWebExchange exchange) {
+        log.error("An unexpected error occurred at {}: {}", Instant.now(), ex.getMessage(), ex);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", exchange);
+    }
+
+
+    private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String message, ServerWebExchange exchange) {
+        String path = exchange.getRequest().getPath().value();
+        ErrorResponse response = new ErrorResponse(
+                status,
+                message,
+                path
+        );
+        return new ResponseEntity<>(response, status);
+    }
+}

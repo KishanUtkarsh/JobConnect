@@ -1,4 +1,4 @@
-package com.jobconnect.config;
+package com.jobconnect.auth.security;
 
 import com.jobconnect.auth.entity.Role;
 import com.jobconnect.auth.enums.RoleType;
