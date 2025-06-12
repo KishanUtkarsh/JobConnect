@@ -30,7 +30,8 @@ public class JwtSecurityContextRepository implements ServerSecurityContextReposi
         log.debug("Extracted token: {}", token);
 
         if (token == null || !token.startsWith("Bearer ")) {
-            throw  new InvalidJwtTokenException("Token is missing or does not start with 'Bearer '");
+            log.info("Missing or invalid Authorization header or Whitelist URL");
+            return Mono.empty();
         }
 
         token = token.substring(7); // Remove "Bearer " prefix
