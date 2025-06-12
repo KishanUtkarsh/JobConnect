@@ -1,9 +1,10 @@
 package com.jobconnect.common.exception;
 
-import com.jobconnect.common.dto.ErrorResponse;
+import com.jobconnect.common.dto.ErrorResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,40 +17,46 @@ import java.time.Instant;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex, ServerWebExchange exchange) {
+    public ResponseEntity<ErrorResponseDTO> handleUserNotFoundException(UserNotFoundException ex, ServerWebExchange exchange) {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), exchange);
     }
 
     @ExceptionHandler(InvalidOtpException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidOtpException(InvalidOtpException ex, ServerWebExchange exchange) {
+    public ResponseEntity<ErrorResponseDTO> handleInvalidOtpException(InvalidOtpException ex, ServerWebExchange exchange) {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), exchange);
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException ex, ServerWebExchange exchange) {
+    public ResponseEntity<ErrorResponseDTO> handleInvalidCredentialsException(InvalidCredentialsException ex, ServerWebExchange exchange) {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), exchange);
     }
 
     @ExceptionHandler(InvalidJwtTokenException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidJwtTokenException(InvalidJwtTokenException ex, ServerWebExchange exchange) {
+    public ResponseEntity<ErrorResponseDTO> handleInvalidJwtTokenException(InvalidJwtTokenException ex, ServerWebExchange exchange) {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), exchange);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex, ServerWebExchange exchange) {
+    public ResponseEntity<ErrorResponseDTO> handleResponseStatusException(ResponseStatusException ex, ServerWebExchange exchange) {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), exchange);
     }
 
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleAuthorizationDeniedException(AuthorizationDeniedException ex, ServerWebExchange exchange) {
+        log.warn("Authorization denied at {}: {}", Instant.now(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "Access denied", exchange);
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, ServerWebExchange exchange) {
+    public ResponseEntity<ErrorResponseDTO> handleGlobalException(Exception ex, ServerWebExchange exchange) {
         log.error("An unexpected error occurred at {}: {}", Instant.now(), ex.getMessage(), ex);
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", exchange);
     }
 
 
-    private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String message, ServerWebExchange exchange) {
+    private ResponseEntity<ErrorResponseDTO> buildErrorResponse(HttpStatus status, String message, ServerWebExchange exchange) {
         String path = exchange.getRequest().getPath().value();
-        ErrorResponse response = new ErrorResponse(
+        ErrorResponseDTO response = new ErrorResponseDTO(
                 status,
                 message,
                 path

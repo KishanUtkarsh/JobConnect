@@ -6,13 +6,13 @@ import org.springframework.data.domain.Pageable;
 
 public interface UserService {
 
-    UserResponse registerUser(UserRequest userRequest);
+    UserResponseDTO registerUser(UserRequestDTO userRequest);
 
-    UserResponse getUserByEmail(String email);
+    UserResponseDTO getUserByEmail(String email);
 
-    LoginResponse verifyUser(LoginRequest loginRequest);
+    LoginResponseDTO verifyUser(LoginRequestDTO loginRequest);
 
-    AuthResponse verifyOtp(OtpRequest otpRequest);
+    AuthResponseDTO verifyOtp(OtpRequestDTO otpRequest);
 
-    List<UserResponse> getAllUsers(Pageable pageable);
+    List<UserResponseDTO> getAllUsers(Pageable pageable);
 }

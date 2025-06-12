@@ -24,21 +24,21 @@ public class AuthController {
 
     @PostMapping("/signup")
     @Operation(summary = "Register a new user", description = "Endpoint to register a new user with email and password")
-    public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserRequest userRequest) {
+    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRequestDTO userRequest) {
         log.info("Registering user with email: {}", userRequest.email());
         return new ResponseEntity<>(userService.registerUser(userRequest), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     @Operation(summary = "User login", description = "Endpoint for user login with email and password")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
         log.info("User login attempt for email: {}", loginRequest.email());
         return ResponseEntity.ok(userService.verifyUser(loginRequest));
     }
 
     @PostMapping("/verify-otp")
     @Operation(summary = "Verify OTP", description = "Endpoint to verify the OTP sent with the user's email")
-    public ResponseEntity<AuthResponse> verifyOtp(@Valid @RequestBody OtpRequest request) {
+    public ResponseEntity<AuthResponseDTO> verifyOtp(@Valid @RequestBody OtpRequestDTO request) {
         log.info("Verifying OTP for email: {}", request.email());
         return ResponseEntity.ok(userService.verifyOtp(request));
     }

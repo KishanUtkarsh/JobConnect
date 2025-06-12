@@ -1,6 +1,6 @@
 package com.jobconnect.auth.dto;
 
-public record LoginResponse(
+public record LoginResponseDTO(
         String email,
         String otp
 ) {

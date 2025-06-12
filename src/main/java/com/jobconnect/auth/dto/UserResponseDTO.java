@@ -1,6 +1,6 @@
 package com.jobconnect.auth.dto;
 
-public record UserResponse(
+public record UserResponseDTO(
     Long id,
     String firstName,
     String lastName,

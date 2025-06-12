@@ -1,10 +1,10 @@
 package com.jobconnect.common.util;
 
-import com.jobconnect.auth.dto.UserRequest;
-import com.jobconnect.auth.dto.UserResponse;
+import com.jobconnect.auth.dto.UserRequestDTO;
+import com.jobconnect.auth.dto.UserResponseDTO;
 import com.jobconnect.auth.entity.Role;
 import com.jobconnect.auth.entity.User;
-import com.jobconnect.config.SecurityConfig;
+import com.jobconnect.config.jwt.SecurityConfig;
 
 import java.util.Date;
 
@@ -14,7 +14,7 @@ public class UserUtil {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
-    public static User convertToUser(UserRequest userRequest , Role role) {
+    public static User convertToUser(UserRequestDTO userRequest , Role role) {
         User user = new User();
         user.setFirstName(userRequest.firstName());
         user.setLastName(userRequest.lastName());
@@ -27,8 +27,8 @@ public class UserUtil {
         return user;
     }
 
-    public static UserResponse convertToUserResponse(User user){
-        return new UserResponse(
+    public static UserResponseDTO convertToUserResponse(User user){
+        return new UserResponseDTO(
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
