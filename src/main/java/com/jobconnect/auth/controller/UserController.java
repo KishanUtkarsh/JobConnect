@@ -3,6 +3,7 @@ package com.jobconnect.auth.controller;
 import com.jobconnect.auth.dto.UserResponseDTO;
 import com.jobconnect.auth.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@Tag(name = "User Management API", description = "Endpoints for managing users")
 public class UserController {
 
     private final UserService userService;

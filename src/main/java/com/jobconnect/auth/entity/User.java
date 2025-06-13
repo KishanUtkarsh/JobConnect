@@ -2,6 +2,8 @@ package com.jobconnect.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.util.Date;
 
@@ -35,8 +37,12 @@ public class User {
 
     private boolean isActive = true;
 
-    private Date createdAt;
-
     @Column(unique = true, nullable = false)
     private String totpSecret;
+
+    @CreatedDate
+    private Date createdAt;
+
+    @LastModifiedDate
+    private Date updatedAt;
 }

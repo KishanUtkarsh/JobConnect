@@ -1,5 +1,8 @@
 package com.jobconnect.auth.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum RoleType {
     ROLE_ADMIN("ADMIN"),
     ROLE_JOBSEEKER("JOBSEEKER"),
@@ -11,7 +14,4 @@ public enum RoleType {
         this.role = role;
     }
 
-    public String getRole() {
-        return role;
-    }
 }

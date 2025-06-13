@@ -6,7 +6,6 @@ import com.jobconnect.auth.entity.Role;
 import com.jobconnect.auth.entity.User;
 import com.jobconnect.config.jwt.SecurityConfig;
 
-import java.util.Date;
 
 public class UserUtil {
 
@@ -22,7 +21,6 @@ public class UserUtil {
         user.setPassword(SecurityConfig.passwordEncoder().encode(userRequest.password()));
         user.setTotpSecret(OtpUtil.generateOtpSecret());
         user.setActive(true);
-        user.setCreatedAt(new Date());
         user.setRole(role);
         return user;
     }

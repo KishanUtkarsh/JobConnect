@@ -23,6 +23,10 @@ public class SecurityConfig {
     }
 
     private static final String[] WHITELIST_URLS = {
+            // Public API endpoints
+            "/api/public/job/**",
+
+            // Swagger UI and OpenAPI documentation
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/v3/api-docs/**",

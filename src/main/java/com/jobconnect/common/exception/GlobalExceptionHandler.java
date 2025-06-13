@@ -41,6 +41,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), exchange);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleResourceNotFoundException(ResourceNotFoundException ex, ServerWebExchange exchange) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), exchange);
+    }
+
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ErrorResponseDTO> handleAuthorizationDeniedException(AuthorizationDeniedException ex, ServerWebExchange exchange) {
         log.warn("Authorization denied at {}: {}", Instant.now(), ex.getMessage());
