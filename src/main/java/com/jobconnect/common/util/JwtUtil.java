@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 public class JwtUtil {
@@ -21,10 +22,10 @@ public class JwtUtil {
     private static final long ACCESS_TOKEN_EXPIRATION = 7L * 24 * 60 * 60 * 1000;  // 7 days
     private static final long REFRESH_TOKEN_EXPIRATION = 14L * 24 * 60 * 60 * 1000; // 14 days
 
-    public static String generateJwtToken(String email, String role, String type) {
+    public static String generateJwtToken(UUID uuid, String role, String type) {
         return JWT.create()
                 .withIssuer("JobConnect")
-                .withSubject(email)
+                .withSubject(String.valueOf(uuid))
                 .withClaim("role", role)
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(type.equals("new") ? System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION : System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
@@ -47,7 +48,7 @@ public class JwtUtil {
         }
     }
 
-    public static String getEmailFromToken(String token) {
+    public static String getUuidFromToken(String token) {
         DecodedJWT decodedJWT = verifyToken(token);
         return decodedJWT.getSubject();
     }

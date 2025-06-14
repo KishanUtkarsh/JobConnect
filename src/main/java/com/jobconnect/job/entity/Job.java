@@ -2,6 +2,7 @@ package com.jobconnect.job.entity;
 
 import com.jobconnect.job.enums.EmploymentType;
 import com.jobconnect.job.enums.JobStatus;
+import com.jobconnect.user.entity.Recruiter;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -10,6 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "jobs")
@@ -20,8 +22,12 @@ import java.util.List;
 public class Job {
 
     @Id()
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recruiter_id")
+    private Recruiter recruiter;
 
     @Column(nullable = false, length = 30)
     private String title;
@@ -49,7 +55,7 @@ public class Job {
     private String salaryRange; // e.g., "50,000 - 70,000 USD"
 
     @Column(nullable = false)
-    private String requirements; // e.g., "Bachelor's degree in Computer Science or related field"
+    private String degree; // e.g., "Bachelor's degree in Computer Science or related field"
 
     private String benefits; // e.g., "Health insurance, 401(k), Paid time off"
 

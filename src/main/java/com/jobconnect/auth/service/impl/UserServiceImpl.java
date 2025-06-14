@@ -10,8 +10,12 @@ import com.jobconnect.auth.service.RoleService;
 import com.jobconnect.auth.service.UserService;
 import com.jobconnect.common.util.JwtUtil;
 import com.jobconnect.common.util.OtpUtil;
-import com.jobconnect.common.util.UserUtil;
+import com.jobconnect.common.util.UserMapperUtil;
+import com.jobconnect.repository.JobSeekerRepository;
+import com.jobconnect.repository.RecruiterRepository;
 import com.jobconnect.repository.UserRepository;
+import com.jobconnect.user.entity.JobSeeker;
+import com.jobconnect.user.entity.Recruiter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,24 +27,41 @@ public class UserServiceImpl implements UserService {
 
     private final RoleService roleService;
     private final UserRepository userRepository;
+    private final JobSeekerRepository jobSeekerRepository;
+    private final RecruiterRepository recruiterRepository;
 
-    public UserServiceImpl(RoleService roleService, UserRepository userRepository) {
+    public UserServiceImpl(RoleService roleService, UserRepository userRepository, JobSeekerRepository jobSeekerRepository, RecruiterRepository recruiterRepository) {
         this.roleService = roleService;
         this.userRepository = userRepository;
+        this.jobSeekerRepository = jobSeekerRepository;
+        this.recruiterRepository = recruiterRepository;
     }
 
     @Override
     public UserResponseDTO getUserByEmail(String email) {
         User user = userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
-        return UserUtil.convertToUserResponse(user);
+        return UserMapperUtil.convertToUserResponse(user);
     }
 
     @Override
     public UserResponseDTO registerUser(UserRequestDTO userRequest) {
-        User user = UserUtil.convertToUser(userRequest, roleService.getRoleByName(userRequest.role()));
+        User user = UserMapperUtil.convertToUser(userRequest, roleService.getRoleByName(userRequest.role()));
         User savedUser = userRepository.save(user);
-        return UserUtil.convertToUserResponse(savedUser);
+        
+        String role = savedUser.getRole().toString();
+        if(role.equals("ROLE_JOBSEEKER")){
+            JobSeeker jobSeeker = new JobSeeker();
+            jobSeeker.setUser(savedUser);
+            jobSeekerRepository.save(jobSeeker);
+            
+        } else if (role.equals("ROLE_RECRUITER")) {
+            Recruiter recruiter = new Recruiter();
+            recruiter.setUser(savedUser);
+            recruiterRepository.save(recruiter);
+        }
+
+        return UserMapperUtil.convertToUserResponse(savedUser);
     }
 
     @Override
@@ -68,7 +89,7 @@ public class UserServiceImpl implements UserService {
             throw new InvalidOtpException();
         }
 
-        String jwtToken = JwtUtil.generateJwtToken(user.getEmail(), user.getRole().getName().toString(), "new");
+        String jwtToken = JwtUtil.generateJwtToken(user.getId(), user.getRole().getName().toString(), "new");
         log.info("Generated JWT token for user: {}", user.getEmail());
 
         return new AuthResponseDTO(jwtToken,"Bearer", JwtUtil.getAccessTokenExpiration(jwtToken));
@@ -78,7 +99,7 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseDTO> getAllUsers(Pageable pageable) {
         List<User> users = userRepository.findAll();
         return users.stream()
-                .map(UserUtil::convertToUserResponse)
+                .map(UserMapperUtil::convertToUserResponse)
                 .toList();
     }
 

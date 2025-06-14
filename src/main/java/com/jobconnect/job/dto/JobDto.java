@@ -8,10 +8,11 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public record JobDto(
         // OUTPUT FIELDS
-        Integer id,
+        UUID id,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
 
@@ -24,7 +25,7 @@ public record JobDto(
         @NotBlank String companyName,
         @NotNull EmploymentType employmentType,
         @NotBlank String salaryRange,
-        @NotBlank String requirements,
+        @NotBlank String degree,
         String benefits,
         @NotNull LocalDate applicationDeadline,
         @NotNull JobStatus status

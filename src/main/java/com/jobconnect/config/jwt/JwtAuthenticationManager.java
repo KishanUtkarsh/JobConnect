@@ -20,12 +20,12 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
         String token = authentication.getCredentials().toString();
         log.debug("Extracted token: {}", token);
 
-        String email = JwtUtil.getEmailFromToken(token);
+        String uuid = JwtUtil.getUuidFromToken(token);
         String role = JwtUtil.getRoleFromToken(token);
 
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
-        Authentication auth = new UsernamePasswordAuthenticationToken(email, null, authorities);
+        Authentication auth = new UsernamePasswordAuthenticationToken(uuid, null, authorities);
 
         return Mono.just(auth);
     }

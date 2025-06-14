@@ -1,14 +1,18 @@
 package com.jobconnect.repository;
 
 import com.jobconnect.auth.entity.User;
+import com.jobconnect.user.entity.Recruiter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface RecruiterRepository extends JpaRepository<Recruiter, UUID> {
 
-    Optional<User> findUserByEmail(String email);
+    Recruiter findRecruiterByUser(UUID userId);
+
+    List<Recruiter> user(User user);
 }

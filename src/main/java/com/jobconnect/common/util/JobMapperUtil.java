@@ -22,7 +22,7 @@ public class JobMapperUtil {
         job.setCompanyName(dto.companyName());
         job.setEmploymentType(dto.employmentType());
         job.setSalaryRange(dto.salaryRange());
-        job.setRequirements(dto.requirements());
+        job.setDegree(dto.degree());
         job.setBenefits(dto.benefits());
         job.setApplicationDeadline(dto.applicationDeadline());
         job.setStatus(dto.status());
@@ -42,7 +42,7 @@ public class JobMapperUtil {
                 job.getCompanyName(),
                 job.getEmploymentType(),
                 job.getSalaryRange(),
-                job.getRequirements(),
+                job.getDegree(),
                 job.getBenefits(),
                 job.getApplicationDeadline(),
                 job.getStatus()
@@ -58,7 +58,7 @@ public class JobMapperUtil {
         existingJob.setCompanyName(dto.companyName());
         existingJob.setEmploymentType(dto.employmentType());
         existingJob.setSalaryRange(dto.salaryRange());
-        existingJob.setRequirements(dto.requirements());
+        existingJob.setDegree(dto.degree());
         existingJob.setBenefits(dto.benefits());
         existingJob.setApplicationDeadline(dto.applicationDeadline());
         existingJob.setStatus(dto.status());
