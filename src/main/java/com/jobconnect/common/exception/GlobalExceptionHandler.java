@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 
+import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 
 @RestControllerAdvice
@@ -49,6 +50,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ErrorResponseDTO> handleAuthorizationDeniedException(AuthorizationDeniedException ex, ServerWebExchange exchange) {
         log.warn("Authorization denied at {}: {}", Instant.now(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "Access denied", exchange);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponseDTO> handleConflictException(ConflictException ex, ServerWebExchange exchange) {
+        log.warn("Conflict error at {}: {}", Instant.now(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), exchange);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDTO> handleIllegalArgumentException(IllegalArgumentException ex, ServerWebExchange exchange) {
+        log.warn("Illegal argument at {}: {}", Instant.now(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), exchange);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleAccessDeniedException(AccessDeniedException ex, ServerWebExchange exchange) {
+        log.warn("Access denied at {}: {}", Instant.now(), ex.getMessage());
         return buildErrorResponse(HttpStatus.FORBIDDEN, "Access denied", exchange);
     }
 

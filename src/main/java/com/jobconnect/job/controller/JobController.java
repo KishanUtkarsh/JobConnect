@@ -9,6 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/api/v1/job")
@@ -30,7 +32,7 @@ public class JobController {
     @PutMapping("delete-job/{jobId}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('RECRUITER')")
-    public Mono<String> deleteJob(@PathVariable Long jobId) {
+    public Mono<String> deleteJob(@PathVariable UUID jobId) {
         return Mono.just(jobService.deleteJob(jobId));
     }
 

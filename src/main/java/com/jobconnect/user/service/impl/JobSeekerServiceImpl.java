@@ -27,7 +27,7 @@ public class JobSeekerServiceImpl implements JobSeekerService {
 
     @Override
     public JobSeekerResponseDTO getJobSeeker(UUID userId) {
-        var jobSeeker = jobSeekerRepository.findJobSeekerByUser(userId);
+        var jobSeeker = jobSeekerRepository.findJobSeekerByUserId(userId);
 
         log.info("JobSeeker found with UserId: {}", jobSeeker.getId() + " : " + jobSeeker.getUser().getFirstName());
         return UserMapperUtil.convertToJobSeekerResponse(jobSeeker);
@@ -36,7 +36,7 @@ public class JobSeekerServiceImpl implements JobSeekerService {
     @Override
     @Transactional
     public JobSeekerResponseDTO updateJobSeeker(UUID userId, JobSeekerRequestDTO jobSeekerRequestDTO) {
-        var jobSeeker = jobSeekerRepository.findJobSeekerByUser(userId);
+        var jobSeeker = jobSeekerRepository.findJobSeekerByUserId(userId);
         var updatedJobSeeker = UserMapperUtil.updateJobSeeker(jobSeeker, jobSeekerRequestDTO, "");
         jobSeekerRepository.save(updatedJobSeeker);
 

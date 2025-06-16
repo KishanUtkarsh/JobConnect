@@ -28,7 +28,7 @@ public class RecruiterServiceImpl implements RecruiterService {
 
     @Override
     public RecruiterResponseDTO getRecruiter(UUID userId) {
-        var recruiter = recruiterRepository.findRecruiterByUser(userId);
+        var recruiter = recruiterRepository.findRecruiterByUserId(userId);
         log.info("Recruiter found recruiter: {}", recruiter.getId()+ " : " + recruiter.getUser().getFirstName());
         return UserMapperUtil.convertToRecruiterResponse(recruiter);
     }
@@ -36,7 +36,7 @@ public class RecruiterServiceImpl implements RecruiterService {
     @Override
     @Transactional
     public RecruiterResponseDTO updateRecruiter(UUID userId, RecruiterRequestDTO recruiterRequestDTO) {
-        var recruiter = recruiterRepository.findRecruiterByUser(userId);
+        var recruiter = recruiterRepository.findRecruiterByUserId(userId);
         var updatedRecruiter = UserMapperUtil.updateRecruiter(recruiter,recruiterRequestDTO);
         log.info("Recruiter Updated with recruiterId : {}", recruiter.getId());
         return UserMapperUtil.convertToRecruiterResponse(updatedRecruiter);

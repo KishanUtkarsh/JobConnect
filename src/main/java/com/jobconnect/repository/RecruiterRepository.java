@@ -6,13 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface RecruiterRepository extends JpaRepository<Recruiter, UUID> {
 
-    Recruiter findRecruiterByUser(UUID userId);
+    Recruiter findRecruiterByUserId(UUID userId);
 
     List<Recruiter> user(User user);
 }

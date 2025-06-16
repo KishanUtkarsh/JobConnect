@@ -16,6 +16,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -58,7 +59,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public JobDto updateJob(JobDto jobDto) {
-        Job existingJob = jobRepository.findById(Long.valueOf(jobDto.id()))
+        Job existingJob = jobRepository.findById(jobDto.id())
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + jobDto.id()));
 
         Job updatedJob = JobMapperUtil.updateJobEntityFromDto(existingJob, jobDto);
@@ -70,7 +71,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public String deleteJob(Long jobId) {
+    public String deleteJob(UUID jobId) {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + jobId));
         job.setStatus(JobStatus.valueOf("DELETED"));

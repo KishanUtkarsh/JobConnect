@@ -1,6 +1,6 @@
 package com.jobconnect.application.enums;
 
-public enum JobStatus {
+public enum ApplicationStatus {
     PENDING,
     APPROVED,
     REJECTED

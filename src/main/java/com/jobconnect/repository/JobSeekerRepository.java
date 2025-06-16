@@ -9,5 +9,5 @@ import java.util.UUID;
 @Repository
 public interface JobSeekerRepository extends JpaRepository<JobSeeker, UUID> {
 
-    JobSeeker findJobSeekerByUser(UUID userId);
+    JobSeeker findJobSeekerByUserId(UUID userId);
 }

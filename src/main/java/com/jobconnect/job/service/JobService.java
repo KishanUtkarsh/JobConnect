@@ -3,6 +3,7 @@ package com.jobconnect.job.service;
 import com.jobconnect.job.dto.JobDto;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface JobService {
 
@@ -17,6 +18,6 @@ public interface JobService {
 
     JobDto createJob(JobDto jobDto);
     JobDto updateJob(JobDto jobDto);
-    String deleteJob(Long jobId);
+    String deleteJob(UUID jobId);
 
 }
