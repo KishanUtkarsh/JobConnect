@@ -10,8 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "jobs")
@@ -35,8 +34,13 @@ public class Job {
     @Column(nullable = false)
     private String role; // e.g., "Software Engineer", "Data Scientist"
 
-    @Column(nullable = false)
-    private List<String> skillSet; // e.g., "Java, Spring Boot, REST APIs"
+    @ElementCollection
+    @CollectionTable(
+            name = "job_skills",
+            joinColumns = @JoinColumn(name = "job_id", insertable = false, updatable = false)
+    )
+    @Column(name = "skill", nullable = false)
+    private Set<String> skills = new HashSet<>();
 
     @Column(nullable = false)
     private String description;

@@ -65,6 +65,18 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), exchange);
     }
 
+    @ExceptionHandler(PermissionDeniedException.class)
+    public ResponseEntity<ErrorResponseDTO> handlePermissionDeniedException(PermissionDeniedException ex, ServerWebExchange exchange) {
+        log.warn("Permission denied at {}: {}", Instant.now(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), exchange);
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleFileNotFoundException(FileNotFoundException ex, ServerWebExchange exchange) {
+        log.warn("File not found at {}: {}", Instant.now(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), exchange);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponseDTO> handleAccessDeniedException(AccessDeniedException ex, ServerWebExchange exchange) {
         log.warn("Access denied at {}: {}", Instant.now(), ex.getMessage());

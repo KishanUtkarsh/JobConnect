@@ -3,9 +3,10 @@ package com.jobconnect.job.controller;
 import com.jobconnect.job.dto.JobDto;
 import com.jobconnect.job.service.JobService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -24,23 +25,23 @@ public class JobController {
 
     @PostMapping("create-job")
     @PreAuthorize("hasRole('RECRUITER')")
-    public String createJob() {
-        // Placeholder for future implementation
-        return "Job creation endpoint will be implemented here.";
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<JobDto> createJob(@Valid @RequestBody JobDto jobDto, Authentication authentication) {
+        return Mono.just(jobService.createJob(jobDto, authentication));
     }
 
-    @PutMapping("delete-job/{jobId}")
+    @DeleteMapping("delete-job/{jobId}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('RECRUITER')")
-    public Mono<String> deleteJob(@PathVariable UUID jobId) {
-        return Mono.just(jobService.deleteJob(jobId));
+    public Mono<String> deleteJob(@PathVariable UUID jobId, Authentication authentication) {
+        return Mono.just(jobService.deleteJob(jobId, authentication));
     }
 
     @PutMapping("update-job")
     @PreAuthorize("hasRole('RECRUITER')")
-    public String updateJob(@RequestBody JobDto jobDto) {
-        // Placeholder for future implementation
-        return "Job update endpoint for job ID ";
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<JobDto> updateJob(@Valid @RequestBody JobDto jobDto, Authentication authentication) {
+        return Mono.just(jobService.updateJob(jobDto, authentication));
     }
 
 }

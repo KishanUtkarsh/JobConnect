@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -45,8 +46,13 @@ public class JobApplication {
     @Column(updatable = false)
     private String resumeLink;
 
-    @Column(updatable = false)
-    private List<String> skillSets;
+    @ElementCollection
+    @CollectionTable(
+            name = "job_applicant_skills",
+            joinColumns = @JoinColumn(name = "application_id", insertable = false, updatable = false)
+    )
+    @Column(name = "skill", nullable = false)
+    private Set<String> skills = new HashSet<>();
 
     @Column(updatable = false)
     private String degree;

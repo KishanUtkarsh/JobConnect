@@ -1,0 +1,12 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://db.eloiigagrzawkzuprroc.supabase.co:5432/postgres}
+    username: ${DATABASE_USER_NAME:postgres}
+    password: ${DATABASE_PASSWORD:Postgres@1232}
+
+  jpa:
+    hibernate:
+      ddl-auto: update

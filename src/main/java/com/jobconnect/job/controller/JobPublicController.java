@@ -15,13 +15,14 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/public/job")
 @Tag(name = "Public Job API", description = "Endpoints for public access to job postings")
 public class JobPublicController {
 
-    private static JobService jobService;
+    private final JobService jobService;
     public JobPublicController(JobService jobService) {
         this.jobService = jobService;
     }
@@ -30,7 +31,7 @@ public class JobPublicController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all jobs", description = "Fetches a list of all available job postings.")
     public Flux<JobDto> getAllJobs(
-            @RequestParam (required = false) List<String> skills,
+            @RequestParam (required = false) Set<String> skills,
             @RequestParam (required = false) String location,
             @RequestParam (required = false) String jobType,
             @RequestParam (required = false) String keyword,

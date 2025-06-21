@@ -10,6 +10,7 @@ import com.jobconnect.user.dto.RecruiterResponseDTO;
 import com.jobconnect.user.service.RecruiterService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -35,7 +36,8 @@ public class RecruiterServiceImpl implements RecruiterService {
 
     @Override
     @Transactional
-    public RecruiterResponseDTO updateRecruiter(UUID userId, RecruiterRequestDTO recruiterRequestDTO) {
+    public RecruiterResponseDTO updateRecruiter(RecruiterRequestDTO recruiterRequestDTO, Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
         var recruiter = recruiterRepository.findRecruiterByUserId(userId);
         var updatedRecruiter = UserMapperUtil.updateRecruiter(recruiter,recruiterRequestDTO);
         log.info("Recruiter Updated with recruiterId : {}", recruiter.getId());

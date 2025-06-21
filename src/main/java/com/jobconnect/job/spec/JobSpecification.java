@@ -1,10 +1,11 @@
 package com.jobconnect.job.spec;
 
 import com.jobconnect.job.entity.Job;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
+import java.util.Set;
 
 public class JobSpecification {
 
@@ -24,13 +25,13 @@ public class JobSpecification {
             criteriaBuilder.equal(root.get("employmentType"), jobType.toLowerCase());
     }
 
-    public static Specification<Job> hasSkills(List<String> skills) {
+    public static Specification<Job> hasSkills(Set<String> skills) {
         return (root, query, criteriaBuilder) -> {
-            Predicate predicate = criteriaBuilder.conjunction();
-            for (String skill : skills) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(root.get("skills"), "%" + skill.toLowerCase() + "%"));
-            }
-            return predicate;
+            Join<Job, String> skillsJoin = root.join("skills");
+            List<String> lowerSkills = skills.stream()
+                    .map(String::toLowerCase)
+                    .toList();
+             return skillsJoin.in(lowerSkills);
         };
     }
 

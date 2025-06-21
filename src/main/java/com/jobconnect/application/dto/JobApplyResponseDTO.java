@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record JobApplyResponseDTO(
-        UUID applicationId,
+    UUID applicationId,
     UUID jobId,
     String jobTitle,
     ApplicationStatus status,

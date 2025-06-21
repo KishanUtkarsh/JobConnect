@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/public/auth")
 @Tag(name = "User Authentication API" , description = "Endpoints for user registration and authentication")
 public class AuthController {
 

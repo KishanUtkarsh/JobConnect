@@ -4,10 +4,10 @@ import com.jobconnect.job.enums.EmploymentType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.List;
+import java.util.Set;
 
 public record JobSeekerRequestDTO(
-        List<String> skills,
+        Set<String> skills,
         @NotBlank String degree,
         @NotNull EmploymentType employmentType
 ) {

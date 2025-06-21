@@ -61,10 +61,10 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
 
         JobApplication application = JobApplicationMapperUtil.convertToJobApplicationEntity(
-                jobSeeker.getResumeUrl(),
+                jobSeeker.getResume(),
                 job,
                 jobSeeker,
-                ApplicationStatus.PENDING
+                ApplicationStatus.APPLIED
         );
         JobApplication savedApplication = jobApplicationRepository.save(application);
         return JobApplicationMapperUtil.convertToJobApplyResponseDTO(savedApplication, job);

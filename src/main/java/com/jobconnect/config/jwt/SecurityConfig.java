@@ -34,7 +34,7 @@ public class SecurityConfig {
             "/webjars/**"
     };
     private static final String[] AUTH_URLS = {
-            "/api/v1/auth/**",
+            "/api/public/auth/**",
     };
 
     private static final String[] ADMIN_URLS = {
@@ -46,7 +46,7 @@ public class SecurityConfig {
     };
 
     private static final String[] RECRUITER_URLS = {
-            "/api/v1/users/**",
+            "/api/v1/job/**"
     };
 
 

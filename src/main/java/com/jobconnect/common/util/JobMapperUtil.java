@@ -2,6 +2,7 @@ package com.jobconnect.common.util;
 
 import com.jobconnect.job.dto.JobDto;
 import com.jobconnect.job.entity.Job;
+import com.jobconnect.user.entity.Recruiter;
 
 import java.util.Collections;
 
@@ -12,11 +13,12 @@ public class JobMapperUtil {
     }
 
 
-    public static Job jobDtoToJobEntity(JobDto dto) {
+    public static Job jobDtoToJobEntity(JobDto dto, Recruiter recruiter) {
         Job job = new Job();
+        job.setRecruiter(recruiter);
         job.setTitle(dto.title());
         job.setRole(dto.role());
-        job.setSkillSet(Collections.singletonList(String.valueOf(dto.skillSet())));
+        job.setSkills(dto.skills());
         job.setDescription(dto.description());
         job.setLocation(dto.location());
         job.setCompanyName(dto.companyName());
@@ -34,9 +36,10 @@ public class JobMapperUtil {
                 job.getId(),
                 job.getCreatedAt(),
                 job.getUpdatedAt(),
+                job.getRecruiter(),
                 job.getTitle(),
                 job.getRole(),
-                job.getSkillSet(),
+                job.getSkills(),
                 job.getDescription(),
                 job.getLocation(),
                 job.getCompanyName(),
@@ -52,7 +55,7 @@ public class JobMapperUtil {
     public static Job updateJobEntityFromDto(Job existingJob, JobDto dto) {
         existingJob.setTitle(dto.title());
         existingJob.setRole(dto.role());
-        existingJob.setSkillSet(Collections.singletonList(String.valueOf(dto.skillSet())));
+        existingJob.setSkills(dto.skills());
         existingJob.setDescription(dto.description());
         existingJob.setLocation(dto.location());
         existingJob.setCompanyName(dto.companyName());

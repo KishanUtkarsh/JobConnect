@@ -63,12 +63,12 @@ public class UserMapperUtil {
         );
     }
 
-    public static JobSeekerResponseDTO convertToJobSeekerResponse(JobSeeker jobSeeker){
+    public static JobSeekerResponseDTO convertToJobSeekerResponse(JobSeeker jobSeeker, String resumeUrl) {
         return new JobSeekerResponseDTO(
                 jobSeeker.getId(),
                 jobSeeker.getUser().getId(),
-                jobSeeker.getResumeUrl(),
-                jobSeeker.getSkillSets(),
+                resumeUrl,
+                jobSeeker.getSkills(),
                 jobSeeker.getDegree(),
                 jobSeeker.getEmploymentType()
         );
@@ -77,8 +77,8 @@ public class UserMapperUtil {
     public static JobSeeker updateJobSeeker(JobSeeker oldJobSeeker, JobSeekerRequestDTO jobSeekerRequestDTO, String resumeUrl){
         oldJobSeeker.setDegree(jobSeekerRequestDTO.degree());
         oldJobSeeker.setEmploymentType(jobSeekerRequestDTO.employmentType());
-        oldJobSeeker.setSkillSets(jobSeekerRequestDTO.skills());
-        oldJobSeeker.setResumeUrl(resumeUrl);
+        oldJobSeeker.setSkills(jobSeekerRequestDTO.skills());
+        oldJobSeeker.setResume(resumeUrl);
         return oldJobSeeker;
     }
 

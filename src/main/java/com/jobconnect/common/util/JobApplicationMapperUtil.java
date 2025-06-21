@@ -8,7 +8,6 @@ import com.jobconnect.application.enums.ApplicationStatus;
 import com.jobconnect.user.entity.JobSeeker;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 public class JobApplicationMapperUtil {
     private  JobApplicationMapperUtil() {
@@ -24,7 +23,7 @@ public class JobApplicationMapperUtil {
         jobApplication.setStatus(status);
         jobApplication.setAppliedAt(LocalDate.now());
         jobApplication.setResumeLink(resumeLink);
-        jobApplication.setSkillSets(jobSeeker.getSkillSets());
+        jobApplication.setSkills(jobSeeker.getSkills());
         jobApplication.setDegree(jobSeeker.getDegree());
         return jobApplication;
     }
