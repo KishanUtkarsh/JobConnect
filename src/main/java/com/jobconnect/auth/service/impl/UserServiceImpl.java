@@ -2,9 +2,11 @@ package com.jobconnect.auth.service.impl;
 
 import com.jobconnect.auth.dto.*;
 import com.jobconnect.auth.entity.User;
+import com.jobconnect.common.constants.AppConstants;
 import com.jobconnect.common.exception.InvalidCredentialsException;
 import com.jobconnect.common.exception.InvalidOtpException;
 import com.jobconnect.common.exception.UserNotFoundException;
+import com.jobconnect.config.email.MailService;
 import com.jobconnect.config.jwt.SecurityConfig;
 import com.jobconnect.auth.service.RoleService;
 import com.jobconnect.auth.service.UserService;
@@ -29,12 +31,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final JobSeekerRepository jobSeekerRepository;
     private final RecruiterRepository recruiterRepository;
+    private final MailService mailService;
 
-    public UserServiceImpl(RoleService roleService, UserRepository userRepository, JobSeekerRepository jobSeekerRepository, RecruiterRepository recruiterRepository) {
+    public UserServiceImpl(RoleService roleService, UserRepository userRepository, JobSeekerRepository jobSeekerRepository, RecruiterRepository recruiterRepository, MailService mailService) {
         this.roleService = roleService;
         this.userRepository = userRepository;
         this.jobSeekerRepository = jobSeekerRepository;
         this.recruiterRepository = recruiterRepository;
+        this.mailService = mailService;
     }
 
     @Override
@@ -61,6 +65,13 @@ public class UserServiceImpl implements UserService {
             recruiterRepository.save(recruiter);
         }
 
+        mailService.sendEmail(userRequest.email(),
+                AppConstants.WELCOME_SUBJECT,
+                AppConstants.getWelcomeEmailBody(userRequest.firstName(),
+                        String.valueOf(userRequest.role())
+                )
+        );
+        log.info("User registered successfully: {}", userRequest.email());
         return UserMapperUtil.convertToUserResponse(savedUser);
     }
 
@@ -75,6 +86,14 @@ public class UserServiceImpl implements UserService {
             throw new InvalidCredentialsException();
         }
         String otp = OtpUtil.generateOtp(user.getTotpSecret());
+
+        mailService.sendEmail(user.getEmail(),
+                AppConstants.OTP_SUBJECT,
+                AppConstants.getOtpEmailBody(user.getFirstName(),
+                        otp
+                )
+        );
+        log.info("User Otp sent Successfully: {}", user.getEmail());
         return new LoginResponseDTO(user.getEmail(), otp);
     }
 

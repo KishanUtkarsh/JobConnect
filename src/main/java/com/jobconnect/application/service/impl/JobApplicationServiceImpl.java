@@ -8,8 +8,10 @@ import com.jobconnect.application.entity.JobApplication;
 import com.jobconnect.application.enums.ApplicationStatus;
 import com.jobconnect.application.service.JobApplicationService;
 import com.jobconnect.auth.entity.User;
+import com.jobconnect.common.constants.AppConstants;
 import com.jobconnect.common.exception.ConflictException;
 import com.jobconnect.common.util.JobApplicationMapperUtil;
+import com.jobconnect.config.email.MailService;
 import com.jobconnect.job.entity.Job;
 import com.jobconnect.repository.*;
 import com.jobconnect.user.entity.JobSeeker;
@@ -29,14 +31,16 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
     private final JobSeekerRepository jobSeekerRepository;
+    private final MailService mailService;
 
     public JobApplicationServiceImpl(JobApplicationRepository jobApplicationRepository,
                                      JobRepository jobRepository,
-                                     UserRepository userRepository, JobSeekerRepository jobSeekerRepository) {
+                                     UserRepository userRepository, JobSeekerRepository jobSeekerRepository, MailService mailService) {
         this.jobApplicationRepository = jobApplicationRepository;
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
         this.jobSeekerRepository = jobSeekerRepository;
+        this.mailService = mailService;
     }
 
     @Override
@@ -69,6 +73,16 @@ public class JobApplicationServiceImpl implements JobApplicationService {
                 ApplicationStatus.APPLIED
         );
         JobApplication savedApplication = jobApplicationRepository.save(application);
+
+        mailService.sendEmail(user.getEmail(),
+                AppConstants.JOB_APPLICATION_SUBJECT,
+                AppConstants.getJobApplicationEmailBody(
+                        user.getFirstName(),
+                        job.getTitle(),
+                        job.getRecruiter().getCompanyName()
+                )
+        );
+        log.info("Job application saved successfully with id: {}", savedApplication.getId());
         return JobApplicationMapperUtil.convertToJobApplyResponseDTO(savedApplication, job);
     }
 
@@ -133,19 +147,35 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     @Override
     @Transactional
     public String updateJobApplicationStatus(JobApplicationUpdateDTO dto, Authentication authentication) {
-    UUID userId = (UUID) authentication.getPrincipal();
-    JobApplication jobApplication = jobApplicationRepository.findById(dto.applicationId())
-            .orElseThrow(() -> new IllegalArgumentException("Job application not found with id: " + dto.applicationId()));
-    if (!jobApplication.getJob().getRecruiter().getUser().getId().equals(userId)) {
-        throw new IllegalArgumentException("User is not authorized to update this job application status");
-    }
+        UUID userId = (UUID) authentication.getPrincipal();
+        JobApplication jobApplication = jobApplicationRepository.findById(dto.applicationId())
+                .orElseThrow(() -> new IllegalArgumentException("Job application not found with id: " + dto.applicationId()));
+        if (!jobApplication.getJob().getRecruiter().getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("User is not authorized to update this job application status");
+            }
+
+        ApplicationStatus applicationStatus = ApplicationStatus.valueOf(dto.status().toUpperCase());
+        String oldStatus = jobApplication.getStatus().toString();
+        jobApplication.setStatus(applicationStatus);
+
         try {
-            ApplicationStatus applicationStatus = ApplicationStatus.valueOf(dto.status().toUpperCase());
-            jobApplication.setStatus(applicationStatus);
             jobApplicationRepository.save(jobApplication);
-            return "Job application status updated successfully";
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid status value: " + dto.status());
-    }
+        }
+
+        mailService.sendEmail(
+                jobApplication.getJobSeeker().getUser().getEmail(),
+                AppConstants.STATUS_UPDATE_SUBJECT,
+                AppConstants.getStatusUpdateEmailBody(
+                        jobApplication.getJobSeeker().getUser().getFirstName(),
+                        jobApplication.getJob().getTitle(),
+                        oldStatus,
+                        jobApplication.getStatus().toString()
+                )
+        );
+        log.info("Job application status updated successfully for application id: {}", dto.applicationId());
+        return "Job application status updated successfully";
+
     }
 }

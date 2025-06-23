@@ -10,3 +10,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
+  mail:
+    host: ${MAIL_HOST:live.smtp.mailtrap.io}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:smtp@mailtrap.io}
+    password: ${MAIL_PASSWORD:8baadd316f92df073609205269251e75}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
