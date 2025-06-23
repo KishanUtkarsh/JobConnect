@@ -42,11 +42,15 @@ public class SecurityConfig {
     };
 
     private static final String[] JOBSEEKER_URLS = {
-            "/api/v1/users/**",
+            "/api/v1/jobApplication-jobseeker/**",
+            "/api/v1/jobseeker/**",
+
     };
 
     private static final String[] RECRUITER_URLS = {
-            "/api/v1/job/**"
+            "/api/v1/job/**",
+            "/api/v1/jobApplication-recruiter/**",
+            "/api/v1/recruiter/**"
     };
 
 

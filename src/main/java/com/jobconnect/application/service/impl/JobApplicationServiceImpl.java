@@ -2,6 +2,7 @@ package com.jobconnect.application.service.impl;
 
 import com.jobconnect.application.dto.JobApplicationRequestDTO;
 import com.jobconnect.application.dto.JobApplicationResponseDTO;
+import com.jobconnect.application.dto.JobApplicationUpdateDTO;
 import com.jobconnect.application.dto.JobApplyResponseDTO;
 import com.jobconnect.application.entity.JobApplication;
 import com.jobconnect.application.enums.ApplicationStatus;
@@ -14,6 +15,7 @@ import com.jobconnect.repository.*;
 import com.jobconnect.user.entity.JobSeeker;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,8 +41,8 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     @Override
     @Transactional
-    public JobApplyResponseDTO applyForJob(JobApplicationRequestDTO jobApplication, UUID userId) {
-
+    public JobApplyResponseDTO applyForJob(JobApplicationRequestDTO jobApplication, Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
 
@@ -72,7 +74,8 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     @Override
     @Transactional
-    public JobApplicationResponseDTO getJobApplicationById(UUID applicationId, UUID userId) {
+    public JobApplicationResponseDTO getJobApplicationById(UUID applicationId, Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
         JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new IllegalArgumentException("Job application not found with id: " + applicationId));
         if(!jobApplication.getJobSeeker().getUser().getId().equals(userId)) {
@@ -88,7 +91,8 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     @Override
     @Transactional
-    public String deleteJobApplication(UUID applicationId, UUID userId) {
+    public String deleteJobApplication(UUID applicationId, Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
         JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new IllegalArgumentException("Job application not found with id: " + applicationId));
         if (!jobApplication.getJobSeeker().getUser().getId().equals(userId)) {
@@ -99,7 +103,8 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     }
 
     @Override
-    public List<JobApplyResponseDTO> getJobApplicationByJobId(UUID jobId, UUID userId) {
+    public List<JobApplyResponseDTO> getJobApplicationByJobId(UUID jobId, Authentication  authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new IllegalArgumentException("Job not found with id: " + jobId));
         if (!job.getRecruiter().getUser().getId().equals(userId)) {
@@ -113,8 +118,9 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     }
 
     @Override
-    public List<JobApplyResponseDTO> getJobApplicationByJobSeekerId(UUID userId) {
-    JobSeeker jobSeeker = jobSeekerRepository.findJobSeekerByUserId(userId);
+    public List<JobApplyResponseDTO> getJobApplicationByJobSeekerId(Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
+        JobSeeker jobSeeker = jobSeekerRepository.findJobSeekerByUserId(userId);
         if (jobSeeker == null) {
             throw new IllegalArgumentException("Job Seeker not found with user id: " + userId);
         }
@@ -126,19 +132,20 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     @Override
     @Transactional
-    public String updateJobApplicationStatus(UUID applicationId, String status, UUID userId) {
-    JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
-            .orElseThrow(() -> new IllegalArgumentException("Job application not found with id: " + applicationId));
+    public String updateJobApplicationStatus(JobApplicationUpdateDTO dto, Authentication authentication) {
+    UUID userId = (UUID) authentication.getPrincipal();
+    JobApplication jobApplication = jobApplicationRepository.findById(dto.applicationId())
+            .orElseThrow(() -> new IllegalArgumentException("Job application not found with id: " + dto.applicationId()));
     if (!jobApplication.getJob().getRecruiter().getUser().getId().equals(userId)) {
         throw new IllegalArgumentException("User is not authorized to update this job application status");
     }
         try {
-            ApplicationStatus applicationStatus = ApplicationStatus.valueOf(status.toUpperCase());
+            ApplicationStatus applicationStatus = ApplicationStatus.valueOf(dto.status().toUpperCase());
             jobApplication.setStatus(applicationStatus);
             jobApplicationRepository.save(jobApplication);
             return "Job application status updated successfully";
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid status value: " + status);
+            throw new IllegalArgumentException("Invalid status value: " + dto.status());
     }
     }
 }

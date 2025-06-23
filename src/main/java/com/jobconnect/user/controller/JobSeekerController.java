@@ -25,7 +25,7 @@ public class JobSeekerController {
         this.jobSeekerService = jobSeekerService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/api/v1/jobseeker")
     @Tag(name = "Get JobSeeker", description = "Get JobSeeker details by UserId")
     @PreAuthorize("hasRole('JOBSEEKER')")
     @ResponseStatus(HttpStatus.OK)
