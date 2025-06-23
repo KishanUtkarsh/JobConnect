@@ -20,7 +20,7 @@ public class JobSeeker {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id" , nullable = false)
     private User user;
 

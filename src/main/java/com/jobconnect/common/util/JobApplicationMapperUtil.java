@@ -53,8 +53,7 @@ public class JobApplicationMapperUtil {
                 application.getId(),
                 job.getId(),
                 job.getTitle(),
-                application.getStatus(),
-                application.getAppliedAt()
+                application.getStatus()
 
         );
     }

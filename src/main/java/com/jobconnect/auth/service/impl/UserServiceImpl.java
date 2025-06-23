@@ -18,6 +18,7 @@ import com.jobconnect.repository.RecruiterRepository;
 import com.jobconnect.repository.UserRepository;
 import com.jobconnect.user.entity.JobSeeker;
 import com.jobconnect.user.entity.Recruiter;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,11 +50,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponseDTO registerUser(UserRequestDTO userRequest) {
         User user = UserMapperUtil.convertToUser(userRequest, roleService.getRoleByName(userRequest.role()));
         User savedUser = userRepository.save(user);
         
-        String role = savedUser.getRole().toString();
+        String role = savedUser.getRole().getName().toString();
         if(role.equals("ROLE_JOBSEEKER")){
             JobSeeker jobSeeker = new JobSeeker();
             jobSeeker.setUser(savedUser);
