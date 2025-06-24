@@ -3,6 +3,9 @@ package com.jobconnect.user.controller;
 import com.jobconnect.user.dto.JobSeekerRequestDTO;
 import com.jobconnect.user.dto.JobSeekerResponseDTO;
 import com.jobconnect.user.service.JobSeekerService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
@@ -54,6 +57,9 @@ public class JobSeekerController {
 
     @PostMapping("/upload-resume")
     @Tag(name = "Upload Resume", description = "Upload JobSeeker's resume")
+    @Parameter(description = "PDF file to upload",
+            schema = @Schema(type = "string", format = "binary"),
+            content = @Content(mediaType = "application/pdf"))
     @PreAuthorize("hasRole('JOBSEEKER')")
     @ResponseStatus(HttpStatus.OK)
     public Mono<String> uploadResume(@RequestParam("file") @Valid @Size(max = 10485760) MultipartFile file, Authentication authentication) {

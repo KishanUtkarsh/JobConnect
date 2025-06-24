@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +18,7 @@ public class MailTrapMailService implements MailService{
         this.javaMailSender = javaMailSender;
     }
 
+    @Async
     @Override
     public void sendEmail(String to, String subject, String body) {
         // Simulate sending an email in production
@@ -33,6 +35,7 @@ public class MailTrapMailService implements MailService{
         }
     }
 
+    @Async
     @Override
     public void sendEmail(String[] to, String subject, String body) {
         // Simulate sending an email in production
