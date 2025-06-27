@@ -27,13 +27,11 @@ public class JobSeekerServiceImpl implements JobSeekerService {
     private final JobSeekerRepository jobSeekerRepository;
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
-    private final RecruiterService recruiterService;
 
-    public JobSeekerServiceImpl(JobSeekerRepository jobSeekerRepository, UserRepository userRepository, FileStorageService fileStorageService, RecruiterService recruiterService) {
+    public JobSeekerServiceImpl(JobSeekerRepository jobSeekerRepository, UserRepository userRepository, FileStorageService fileStorageService) {
         this.jobSeekerRepository = jobSeekerRepository;
         this.userRepository = userRepository;
         this.fileStorageService = fileStorageService;
-        this.recruiterService = recruiterService;
     }
 
     @Override
@@ -101,12 +99,13 @@ public class JobSeekerServiceImpl implements JobSeekerService {
     @Override
     @Transactional
     public String deleteResume(Authentication authentication) {
-    UUID userId = (UUID) authentication.getPrincipal();
-    JobSeeker jobSeeker = jobSeekerRepository.findJobSeekerByUserId(userId);
-    if (jobSeeker.getResume() == null && jobSeeker.getResume().isEmpty()) {
-        log.warn("No resume found for JobSeeker with UserId: {}", jobSeeker.getUser().getId());
-        return new FileNotFoundException("No resume found for JobSeeker with UserId: " + jobSeeker.getUser().getId()).getMessage();
-    }
+
+        UUID userId = (UUID) authentication.getPrincipal();
+        JobSeeker jobSeeker = jobSeekerRepository.findJobSeekerByUserId(userId);
+        if (jobSeeker.getResume() == null && jobSeeker.getResume().isEmpty()) {
+            log.warn("No resume found for JobSeeker with UserId: {}", jobSeeker.getUser().getId());
+            return new FileNotFoundException("No resume found for JobSeeker with UserId: " + jobSeeker.getUser().getId()).getMessage();
+        }
         String fileName = jobSeeker.getResume();
 
         try {

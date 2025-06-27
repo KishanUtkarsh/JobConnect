@@ -1,4 +1,4 @@
-package com.jobconnect.config.email;
+package com.jobconnect.notification.mail;
 
 import org.springframework.scheduling.annotation.Async;
 

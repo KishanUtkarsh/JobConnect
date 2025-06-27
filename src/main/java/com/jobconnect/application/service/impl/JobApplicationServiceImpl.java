@@ -11,7 +11,7 @@ import com.jobconnect.auth.entity.User;
 import com.jobconnect.common.constants.AppConstants;
 import com.jobconnect.common.exception.ConflictException;
 import com.jobconnect.common.util.JobApplicationMapperUtil;
-import com.jobconnect.config.email.MailService;
+import com.jobconnect.notification.mail.MailService;
 import com.jobconnect.job.entity.Job;
 import com.jobconnect.repository.*;
 import com.jobconnect.user.entity.JobSeeker;

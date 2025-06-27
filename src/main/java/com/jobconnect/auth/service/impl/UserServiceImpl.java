@@ -6,7 +6,7 @@ import com.jobconnect.common.constants.AppConstants;
 import com.jobconnect.common.exception.InvalidCredentialsException;
 import com.jobconnect.common.exception.InvalidOtpException;
 import com.jobconnect.common.exception.UserNotFoundException;
-import com.jobconnect.config.email.MailService;
+import com.jobconnect.notification.mail.MailService;
 import com.jobconnect.config.jwt.SecurityConfig;
 import com.jobconnect.auth.service.RoleService;
 import com.jobconnect.auth.service.UserService;

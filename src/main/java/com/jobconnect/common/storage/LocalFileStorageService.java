@@ -36,7 +36,7 @@ public class LocalFileStorageService implements FileStorageService{
 
     @Override
     public String retrieveFile(String filename) {
-        return "";
+        return this.getFileUrl(filename);
     }
 
     @Override

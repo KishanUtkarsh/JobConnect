@@ -83,6 +83,12 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.FORBIDDEN, "Access denied", exchange);
     }
 
+    @ExceptionHandler(FileUploadException.class)
+    public ResponseEntity<ErrorResponseDTO> handleFileUploadException(FileUploadException ex, ServerWebExchange exchange) {
+        log.warn("File upload error at {}: {}", Instant.now(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), exchange);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGlobalException(Exception ex, ServerWebExchange exchange) {
         log.error("An unexpected error occurred at {}: {}", Instant.now(), ex.getMessage(), ex);

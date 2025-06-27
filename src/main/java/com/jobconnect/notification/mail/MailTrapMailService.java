@@ -1,4 +1,4 @@
-package com.jobconnect.config.email;
+package com.jobconnect.notification.mail;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -9,19 +9,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@Profile("dev") // This service will only be active in the 'dev' profile
-public class GmailMailService implements MailService{
+@Profile("prod") // This service will only be active in the 'prod' profile
+public class MailTrapMailService implements MailService {
 
     private final JavaMailSender javaMailSender;
-    public GmailMailService(JavaMailSender javaMailSender) {
+    private String SENDER_EMAIL = "support@demomailtrap.co";
+    public MailTrapMailService(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 
-    @Override
     @Async
+    @Override
     public void sendEmail(String to, String subject, String body) {
+        // Simulate sending an email in production
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
+        message.setFrom(SENDER_EMAIL);
         message.setSubject(subject);
         message.setText(body);
         try {
@@ -32,11 +35,13 @@ public class GmailMailService implements MailService{
         }
     }
 
-    @Override
     @Async
+    @Override
     public void sendEmail(String[] to, String subject, String body) {
+        // Simulate sending an email in production
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
+        message.setFrom(SENDER_EMAIL);
         message.setSubject(subject);
         message.setText(body);
         try {
@@ -45,9 +50,5 @@ public class GmailMailService implements MailService{
             // Log the exception or handle it as needed
             log.error("Failed to send email to {}: {}", String.join(", ", to), e.getMessage());
         }
-
     }
-
-
-
 }
