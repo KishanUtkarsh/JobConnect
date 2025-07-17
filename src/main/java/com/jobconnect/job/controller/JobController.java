@@ -1,6 +1,7 @@
 package com.jobconnect.job.controller;
 
-import com.jobconnect.job.dto.JobDto;
+import com.jobconnect.job.dto.JobRequestDto;
+import com.jobconnect.job.dto.JobResponseDto;
 import com.jobconnect.job.service.JobService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,7 +27,7 @@ public class JobController {
     @PostMapping("create-job")
     @PreAuthorize("hasRole('RECRUITER')")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<JobDto> createJob(@Valid @RequestBody JobDto jobDto, Authentication authentication) {
+    public Mono<JobResponseDto> createJob(@Valid @RequestBody JobRequestDto jobDto, Authentication authentication) {
         return Mono.just(jobService.createJob(jobDto, authentication));
     }
 
@@ -40,7 +41,7 @@ public class JobController {
     @PutMapping("update-job")
     @PreAuthorize("hasRole('RECRUITER')")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<JobDto> updateJob(@Valid @RequestBody JobDto jobDto, Authentication authentication) {
+    public Mono<JobResponseDto> updateJob(@Valid @RequestBody JobRequestDto jobDto, Authentication authentication) {
         return Mono.just(jobService.updateJob(jobDto, authentication));
     }
 

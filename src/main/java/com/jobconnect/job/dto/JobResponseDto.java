@@ -11,14 +11,11 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-public record JobDto(
-        // OUTPUT FIELDS
+public record JobResponseDto(
         UUID id,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         Recruiter recruiter,
-
-        // INPUT + OUTPUT FIELDS
         @NotBlank String title,
         @NotBlank String role,
         @NotNull Set<String> skills,

@@ -3,7 +3,8 @@ package com.jobconnect.job.service.impl;
 import com.jobconnect.common.exception.PermissionDeniedException;
 import com.jobconnect.common.exception.ResourceNotFoundException;
 import com.jobconnect.common.util.JobMapperUtil;
-import com.jobconnect.job.dto.JobDto;
+import com.jobconnect.job.dto.JobRequestDto;
+import com.jobconnect.job.dto.JobResponseDto;
 import com.jobconnect.job.entity.Job;
 import com.jobconnect.job.enums.JobStatus;
 import com.jobconnect.job.service.JobService;
@@ -12,6 +13,9 @@ import com.jobconnect.repository.JobRepository;
 import com.jobconnect.repository.RecruiterRepository;
 import com.jobconnect.user.entity.Recruiter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -34,9 +38,12 @@ public class JobServiceImpl implements JobService {
         this.recruiterRepository = recruiterRepository;
     }
 
-
     @Override
-    public List<JobDto> findAllJobs(Set<String> skills, String location, String jobType, String keyword, int page, int size) {
+    @Cacheable(
+            value = "JOBS_CACHE",
+            key = "{#skills, #location, #jobType, #keyword, #page, #size}"
+    )
+    public List<JobResponseDto> findAllJobs(Set<String> skills, String location, String jobType, String keyword, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size , Sort.by("createdAt").descending());
 
@@ -58,7 +65,8 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public JobDto createJob(JobDto jobDto, Authentication authentication) {
+    @CachePut(value = "JOB_CACHE", key = "#result.id()")
+    public JobResponseDto createJob(JobRequestDto jobDto, Authentication authentication) {
         UUID userId = (UUID) authentication.getPrincipal();
         Recruiter recruiter = recruiterRepository.findRecruiterByUserId(userId);
 
@@ -68,7 +76,8 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public JobDto updateJob(JobDto jobDto, Authentication authentication) {
+    @CachePut(value = "JOB_CACHE", key = "#result.id()")
+    public JobResponseDto updateJob(JobRequestDto jobDto, Authentication authentication) {
         Job existingJob = jobRepository.findById(jobDto.id())
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + jobDto.id()));
 
@@ -85,6 +94,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @CacheEvict(value = "JOB_CACHE", key = "#jobId")
     public String deleteJob(UUID jobId, Authentication authentication) {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + jobId));

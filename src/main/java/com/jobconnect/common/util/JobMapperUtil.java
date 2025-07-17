@@ -1,10 +1,9 @@
 package com.jobconnect.common.util;
 
-import com.jobconnect.job.dto.JobDto;
+import com.jobconnect.job.dto.JobRequestDto;
+import com.jobconnect.job.dto.JobResponseDto;
 import com.jobconnect.job.entity.Job;
 import com.jobconnect.user.entity.Recruiter;
-
-import java.util.Collections;
 
 public class JobMapperUtil {
 
@@ -13,7 +12,7 @@ public class JobMapperUtil {
     }
 
 
-    public static Job jobDtoToJobEntity(JobDto dto, Recruiter recruiter) {
+    public static Job jobDtoToJobEntity(JobRequestDto dto, Recruiter recruiter) {
         Job job = new Job();
         job.setRecruiter(recruiter);
         job.setTitle(dto.title());
@@ -31,8 +30,8 @@ public class JobMapperUtil {
         return job;
     }
 
-    public static JobDto jobEntityToJobDto(Job job) {
-        return new JobDto(
+    public static JobResponseDto jobEntityToJobDto(Job job) {
+        return new JobResponseDto(
                 job.getId(),
                 job.getCreatedAt(),
                 job.getUpdatedAt(),
@@ -52,7 +51,7 @@ public class JobMapperUtil {
         );
     }
 
-    public static Job updateJobEntityFromDto(Job existingJob, JobDto dto) {
+    public static Job updateJobEntityFromDto(Job existingJob, JobRequestDto dto) {
         existingJob.setTitle(dto.title());
         existingJob.setRole(dto.role());
         existingJob.setSkills(dto.skills());

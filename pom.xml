@@ -105,6 +105,13 @@
 			<version>1.12.773</version>
 		</dependency>
 
+<!-- 		Spring Data Redis with Lettuce -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>

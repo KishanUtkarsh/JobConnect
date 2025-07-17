@@ -1,6 +1,7 @@
 package com.jobconnect.job.service;
 
-import com.jobconnect.job.dto.JobDto;
+import com.jobconnect.job.dto.JobRequestDto;
+import com.jobconnect.job.dto.JobResponseDto;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.UUID;
 
 public interface JobService {
 
-    List<JobDto> findAllJobs(
+    List<JobResponseDto> findAllJobs(
             Set<String> skills,
             String location,
             String jobType,
@@ -18,8 +19,8 @@ public interface JobService {
             int size
     );
 
-    JobDto createJob(JobDto jobDto , Authentication authentication);
-    JobDto updateJob(JobDto jobDto, Authentication authentication);
+    JobResponseDto createJob(JobRequestDto jobDto , Authentication authentication);
+    JobResponseDto updateJob(JobRequestDto jobDto, Authentication authentication);
     String deleteJob(UUID jobId, Authentication authentication);
 
 }
