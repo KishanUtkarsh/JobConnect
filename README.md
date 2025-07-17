@@ -78,7 +78,7 @@ flowchart TD
 
 ### 🚦 Clone the repository
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/KishanUtkarsh/JobConnect
 cd JobConnect
 ```
 
