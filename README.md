@@ -53,7 +53,8 @@
 
 ```mermaid
 flowchart TD
-    A[User / Recruiter / Admin] -->|REST API| B[Spring Boot Backend]
+    A[User / Recruiter / Admin]
+    A --> B[Spring Boot Backend]
     B --> C[Authentication & Security (JWT, OTP)]
     B --> D[Job Module]
     B --> E[Application Module]
