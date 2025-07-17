@@ -1,12 +1,11 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:1101/jobConnect
-    username: admin
-    password: admin@123
-
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     properties:
@@ -14,24 +13,25 @@ spring:
         format_sql: true
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${HIBERNATE_DDL_AUTO:update}
 
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: sprngtesting@gmail.com
-    password: expc hqrr txzt sgel
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+
   data:
     redis:
-      port: 6379
-      host: localhost
-      password: Admin@123
-      username: admin
+      port: ${REDIS_PORT:6379}
+      host: ${REDIS_HOST:localhost}
+      password: ${REDIS_PASSWORD}
+      username: ${REDIS_USERNAME}
   cache:
     type: redis

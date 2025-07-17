@@ -1,22 +1,21 @@
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT}
 
 spring:
-
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://db.eloiigagrzawkzuprroc.supabase.co:5432/postgres}
-    username: ${DATABASE_USER_NAME:postgres}
-    password: ${DATABASE_PASSWORD:Postgres@1232}
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER_NAME}
+    password: ${DATABASE_PASSWORD}
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${HIBERNATE_DDL_AUTO}
 
   mail:
-    host: ${MAIL_HOST:live.smtp.mailtrap.io}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:smtp@mailtrap.io}
-    password: ${MAIL_PASSWORD:8baadd316f92df073609205269251e75}
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -27,11 +26,12 @@ spring:
 cloud:
   aws:
     credentials:
-      access-key: ${AWS_ACCESS_KEY_ID:your-access-key-id}
-      secret-key: ${AWS_SECRET_ACCESS_KEY:your-secret-access-key}
-    region: ${AWS_REGION:ap-south-1}
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
+    region: ${AWS_REGION}
     stack:
       auto: false
+
 app:
   s3:
-    bucket: ${AWS_S3_BUCKET:jobresumes3}
+    bucket: ${AWS_S3_BUCKET}
