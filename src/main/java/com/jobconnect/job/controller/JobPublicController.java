@@ -7,10 +7,13 @@ import com.jobconnect.job.service.JobService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/public/job")
@@ -36,6 +39,13 @@ public class JobPublicController {
         return Flux.fromIterable(
                 jobService.findAllJobs(skills, location, jobType, keyword, page, size)
         );
+    }
+
+    @GetMapping("/get-job")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get job by ID", description = "Fetches a specific job posting by its unique identifier.")
+    public Mono<JobResponseDto> getJob(@RequestParam("jobId") UUID jobId) {
+        return Mono.just(jobService.getJobById(jobId));
     }
 
 }

@@ -17,7 +17,7 @@ public class RedisConfig {
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
 
-        RedisCacheConfiguration defaultCacheConfig =  RedisCacheConfiguration.defaultCacheConfig()
+        RedisCacheConfiguration singleJobCacheConfig =  RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofDays(15))
                 .disableCachingNullValues()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
@@ -31,7 +31,7 @@ public class RedisConfig {
 
         return RedisCacheManager
                 .builder(connectionFactory)
-                .cacheDefaults(defaultCacheConfig)
+                .cacheDefaults(singleJobCacheConfig)
                 .withCacheConfiguration("JOBS_CACHE", jobsCacheConfig)
                 .build();
 

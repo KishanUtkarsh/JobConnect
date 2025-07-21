@@ -12,6 +12,7 @@ import com.jobconnect.job.spec.JobSpecification;
 import com.jobconnect.repository.JobRepository;
 import com.jobconnect.repository.RecruiterRepository;
 import com.jobconnect.user.entity.Recruiter;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -65,7 +66,20 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Cacheable(value = "JOB_CACHE", key = "#jobId")
+    public JobResponseDto getJobById(UUID jobId) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + jobId));
+        if (job.getStatus() == JobStatus.DELETED) {
+            log.warn("Job with ID {} is marked as deleted", jobId);
+            throw new PermissionDeniedException("Job with ID " + jobId + " is marked as deleted.");
+        }
+        return JobMapperUtil.jobEntityToJobDto(job);
+    }
+
+    @Override
     @CachePut(value = "JOB_CACHE", key = "#result.id()")
+    @Transactional
     public JobResponseDto createJob(JobRequestDto jobDto, Authentication authentication) {
         UUID userId = (UUID) authentication.getPrincipal();
         Recruiter recruiter = recruiterRepository.findRecruiterByUserId(userId);
@@ -77,11 +91,12 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @CachePut(value = "JOB_CACHE", key = "#result.id()")
+    @Transactional
     public JobResponseDto updateJob(JobRequestDto jobDto, Authentication authentication) {
         Job existingJob = jobRepository.findById(jobDto.id())
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + jobDto.id()));
 
-        if(!existingJob.getRecruiter().getUser().equals(authentication.getPrincipal())) {
+        if(!existingJob.getRecruiter().getUser().getId().equals(authentication.getPrincipal())) {
             throw new PermissionDeniedException("You do not have permission to update this job.");
         }
 
@@ -95,12 +110,18 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @CacheEvict(value = "JOB_CACHE", key = "#jobId")
+    @Transactional
     public String deleteJob(UUID jobId, Authentication authentication) {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + jobId));
 
-        if(!job.getRecruiter().getUser().equals(authentication.getPrincipal())) {
+        if(!job.getRecruiter().getUser().getId().equals(authentication.getPrincipal())) {
             throw new PermissionDeniedException("You do not have permission to delete this job.");
+        }
+
+        if(job.getStatus() == JobStatus.DELETED) {
+            log.warn("Job with ID {} is already marked as deleted", jobId);
+            throw new PermissionDeniedException("Job with ID " + jobId + " is already marked as deleted.");
         }
 
         job.setStatus(JobStatus.valueOf("DELETED"));

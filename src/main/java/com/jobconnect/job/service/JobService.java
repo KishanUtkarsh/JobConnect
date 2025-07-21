@@ -19,6 +19,8 @@ public interface JobService {
             int size
     );
 
+    JobResponseDto getJobById(UUID jobId);
+
     JobResponseDto createJob(JobRequestDto jobDto , Authentication authentication);
     JobResponseDto updateJob(JobRequestDto jobDto, Authentication authentication);
     String deleteJob(UUID jobId, Authentication authentication);

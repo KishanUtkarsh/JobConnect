@@ -2,20 +2,17 @@ package com.jobconnect.job.dto;
 
 import com.jobconnect.job.enums.EmploymentType;
 import com.jobconnect.job.enums.JobStatus;
-import com.jobconnect.user.entity.Recruiter;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
 public record JobResponseDto(
         UUID id,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        Recruiter recruiter,
+        String createdAt,
+        String updatedAt,
+        RecruiterDTO recruiter,
         @NotBlank String title,
         @NotBlank String role,
         @NotNull Set<String> skills,
@@ -26,7 +23,7 @@ public record JobResponseDto(
         @NotBlank String salaryRange,
         @NotBlank String degree,
         String benefits,
-        @NotNull LocalDate applicationDeadline,
+        @NotNull String applicationDeadline,
         @NotNull JobStatus status
 ) {
 }

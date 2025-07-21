@@ -2,11 +2,13 @@ package com.jobconnect.common.exception;
 
 import com.jobconnect.common.dto.ErrorResponseDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -88,6 +90,11 @@ public class GlobalExceptionHandler {
         log.warn("File upload error at {}: {}", Instant.now(), ex.getMessage());
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), exchange);
     }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolationException(DataIntegrityViolationException ex, ServerWebExchange exchange) {
+        log.error("Data integrity violation at {}: {}", Instant.now(), ex.getMessage(), ex);
+        return buildErrorResponse(HttpStatus.CONFLICT, "Data integrity violation", exchange);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGlobalException(Exception ex, ServerWebExchange exchange) {
@@ -95,9 +102,20 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", exchange);
     }
 
+    @ExceptionHandler(WebClientResponseException.InternalServerError.class)
+    public ResponseEntity<ErrorResponseDTO> handleWebClientInternalServerError(WebClientResponseException.InternalServerError ex, ServerWebExchange exchange) {
+        log.error("WebClient Internal Server Error at {}: {}", Instant.now(), ex.getMessage(), ex);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), exchange);
+    }
+
 
     private ResponseEntity<ErrorResponseDTO> buildErrorResponse(HttpStatus status, String message, ServerWebExchange exchange) {
         String path = exchange.getRequest().getPath().value();
+        if(message.contains("404 NOT_FOUND")) {
+            message = "Resource / Api not found";
+            status = HttpStatus.NOT_FOUND;
+        }
+
         ErrorResponseDTO response = new ErrorResponseDTO(
                 status,
                 message,

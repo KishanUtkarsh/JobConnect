@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.jobconnect.common.exception.InvalidJwtTokenException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,6 +19,7 @@ public class JwtUtil {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
+    @Value("${jwt.secret}")
     private static final String SECRET_KEY = "EAD925F94CA15B497A4D7521C5ABE";
     private static final long ACCESS_TOKEN_EXPIRATION = 7L * 24 * 60 * 60 * 1000;  // 7 days
     private static final long REFRESH_TOKEN_EXPIRATION = 14L * 24 * 60 * 60 * 1000; // 14 days

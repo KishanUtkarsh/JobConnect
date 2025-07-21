@@ -36,7 +36,7 @@ public class JobSeekerServiceImpl implements JobSeekerService {
 
     @Override
     public JobSeekerResponseDTO getJobSeeker(UUID userId) {
-        var jobSeeker = jobSeekerRepository.findJobSeekerByUserId(userId);
+        JobSeeker jobSeeker = jobSeekerRepository.findJobSeekerByUserId(userId);
 
         log.info("JobSeeker found with UserId: {}", jobSeeker.getId() + " : " + jobSeeker.getUser().getFirstName());
         String resumeUrl = "Resume not uploaded";
@@ -71,8 +71,8 @@ public class JobSeekerServiceImpl implements JobSeekerService {
 
         user.setActive(false);
         userRepository.save(user);
-        log.info("JobSeeker deleted jobseeker with UserId: {}", user.getId());
-        return "JobSeeker has been deleted for UserId" + userId;
+        log.info("JobSeeker Disabled jobseeker with UserId: {}", user.getId());
+        return "JobSeeker has been disabled for UserId" + userId + " and deleted in 14 days";
     }
 
     @Override

@@ -26,7 +26,7 @@ public class Job {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "recruiter_id")
     private Recruiter recruiter;
 
@@ -36,15 +36,15 @@ public class Job {
     @Column(nullable = false)
     private String role; // e.g., "Software Engineer", "Data Scientist"
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "job_skills",
-            joinColumns = @JoinColumn(name = "job_id", insertable = false, updatable = false)
+            joinColumns = @JoinColumn(name = "job_id")
     )
     @Column(name = "skill", nullable = false)
     private Set<String> skills = new HashSet<>();
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2048)
     private String description;
 
     @Column(nullable = false)

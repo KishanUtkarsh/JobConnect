@@ -26,10 +26,10 @@ public class JobSeeker {
 
     private String resume;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "job_seeker_skills",
-            joinColumns = @JoinColumn(name = "job_seeker_id", insertable = false, updatable = false)
+            joinColumns = @JoinColumn(name = "job_seeker_id")
     )
     @Column(name = "skill")
     private Set<String> skills = new HashSet<>();

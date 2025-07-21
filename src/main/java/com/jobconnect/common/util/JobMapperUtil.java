@@ -2,6 +2,7 @@ package com.jobconnect.common.util;
 
 import com.jobconnect.job.dto.JobRequestDto;
 import com.jobconnect.job.dto.JobResponseDto;
+import com.jobconnect.job.dto.RecruiterDTO;
 import com.jobconnect.job.entity.Job;
 import com.jobconnect.user.entity.Recruiter;
 
@@ -33,9 +34,9 @@ public class JobMapperUtil {
     public static JobResponseDto jobEntityToJobDto(Job job) {
         return new JobResponseDto(
                 job.getId(),
-                job.getCreatedAt(),
-                job.getUpdatedAt(),
-                job.getRecruiter(),
+                job.getCreatedAt().toString(),
+                job.getUpdatedAt().toString(),
+                recruiterEntityToRecruiterDto(job.getRecruiter()),
                 job.getTitle(),
                 job.getRole(),
                 job.getSkills(),
@@ -46,7 +47,7 @@ public class JobMapperUtil {
                 job.getSalaryRange(),
                 job.getDegree(),
                 job.getBenefits(),
-                job.getApplicationDeadline(),
+                job.getApplicationDeadline().toString(),
                 job.getStatus()
         );
     }
@@ -65,5 +66,16 @@ public class JobMapperUtil {
         existingJob.setApplicationDeadline(dto.applicationDeadline());
         existingJob.setStatus(dto.status());
         return existingJob;
+    }
+
+    private static RecruiterDTO recruiterEntityToRecruiterDto(Recruiter recruiter) {
+        return new RecruiterDTO(
+                recruiter.getId().toString(),
+                recruiter.getUser().getFirstName()+" "+recruiter.getUser().getLastName(),
+                recruiter.getUser().getEmail(),
+                recruiter.getCompanyName(),
+                recruiter.getPosition(),
+                recruiter.getCompanyUrl()
+        );
     }
 }

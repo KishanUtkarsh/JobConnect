@@ -1,5 +1,6 @@
 package com.jobconnect.user.controller;
 
+import com.jobconnect.common.util.FileConverter;
 import com.jobconnect.user.dto.JobSeekerRequestDTO;
 import com.jobconnect.user.dto.JobSeekerResponseDTO;
 import com.jobconnect.user.service.JobSeekerService;
@@ -8,8 +9,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +30,7 @@ public class JobSeekerController {
         this.jobSeekerService = jobSeekerService;
     }
 
-    @GetMapping("/api/v1/jobseeker")
+    @GetMapping()
     @Tag(name = "Get JobSeeker", description = "Get JobSeeker details by UserId")
     @PreAuthorize("hasRole('JOBSEEKER')")
     @ResponseStatus(HttpStatus.OK)
@@ -55,15 +57,12 @@ public class JobSeekerController {
         return Mono.just(jobSeekerService.deleteJobSeeker(userId));
     }
 
-    @PostMapping("/upload-resume")
+    @PostMapping(value = "/upload-resume", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Tag(name = "Upload Resume", description = "Upload JobSeeker's resume")
-    @Parameter(description = "PDF file to upload",
-            schema = @Schema(type = "string", format = "binary"),
-            content = @Content(mediaType = "application/pdf"))
     @PreAuthorize("hasRole('JOBSEEKER')")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<String> uploadResume(@RequestParam("file") @Valid @Size(max = 10485760) MultipartFile file, Authentication authentication) {
-        return Mono.just(jobSeekerService.uploadResume(file, authentication));
+    public Mono<String> uploadResume(@RequestPart("file") FilePart file, Authentication authentication) {
+        return Mono.just(jobSeekerService.uploadResume(FileConverter.convertToMultipartFile(file), authentication));
     }
 
     @DeleteMapping("/delete-resume")

@@ -53,7 +53,7 @@ public class RecruiterServiceImpl implements RecruiterService {
 
         user.setActive(false);
         userRepository.save(user);
-        log.info("Recruiter deleted recruiter with UserId: {}", user.getId());
-        return "Recruiter has been deleted for UserId" + userId;
+        log.info("Recruiter Disabled recruiter with UserId: {}", user.getId());
+        return "Recruiter has been disable for UserId" + userId + " and deleted in 14 days";
     }
 }

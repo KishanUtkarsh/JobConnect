@@ -3,6 +3,7 @@ package com.jobconnect.auth.service.impl;
 import com.jobconnect.auth.dto.*;
 import com.jobconnect.auth.entity.User;
 import com.jobconnect.common.constants.AppConstants;
+import com.jobconnect.common.exception.ConflictException;
 import com.jobconnect.common.exception.InvalidCredentialsException;
 import com.jobconnect.common.exception.InvalidOtpException;
 import com.jobconnect.common.exception.UserNotFoundException;
@@ -20,6 +21,7 @@ import com.jobconnect.user.entity.JobSeeker;
 import com.jobconnect.user.entity.Recruiter;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -53,7 +55,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDTO registerUser(UserRequestDTO userRequest) {
         User user = UserMapperUtil.convertToUser(userRequest, roleService.getRoleByName(userRequest.role()));
-        User savedUser = userRepository.save(user);
+        User savedUser;
+        try {
+            savedUser = userRepository.save(user);
+            userRepository.flush();
+        } catch (Exception e) {
+            log.error("Error saving user: {}", e.getMessage());
+            throw new ConflictException("User with email " + userRequest.email() + " already exists.");
+        }
         
         String role = savedUser.getRole().getName().toString();
         if(role.equals("ROLE_JOBSEEKER")){
@@ -120,6 +129,7 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseDTO> getAllUsers(Pageable pageable) {
         List<User> users = userRepository.findAll();
         return users.stream()
+//                .filter(User::isActive)
                 .map(UserMapperUtil::convertToUserResponse)
                 .toList();
     }

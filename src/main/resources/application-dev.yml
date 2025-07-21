@@ -35,3 +35,6 @@ spring:
       username: ${REDIS_USERNAME}
   cache:
     type: redis
+
+jwt:
+  secret: ${JWT_SECRET:EAD925F94CA15B497A4D7521C5ABE}
