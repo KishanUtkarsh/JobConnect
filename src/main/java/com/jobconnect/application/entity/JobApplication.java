@@ -51,10 +51,10 @@ public class JobApplication {
     @Column(updatable = false)
     private String resumeLink;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "job_applicant_skills",
-            joinColumns = @JoinColumn(name = "application_id", insertable = false, updatable = false)
+            joinColumns = @JoinColumn(name = "application_id")
     )
     @Column(name = "skill", nullable = false)
     private Set<String> skills = new HashSet<>();

@@ -10,6 +10,7 @@ import com.jobconnect.application.service.JobApplicationService;
 import com.jobconnect.auth.entity.User;
 import com.jobconnect.common.constants.AppConstants;
 import com.jobconnect.common.exception.ConflictException;
+import com.jobconnect.common.exception.ResourceNotFoundException;
 import com.jobconnect.common.util.JobApplicationMapperUtil;
 import com.jobconnect.notification.mail.MailService;
 import com.jobconnect.job.entity.Job;
@@ -108,7 +109,7 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     public String deleteJobApplication(UUID applicationId, Authentication authentication) {
         UUID userId = (UUID) authentication.getPrincipal();
         JobApplication jobApplication = jobApplicationRepository.findById(applicationId)
-                .orElseThrow(() -> new IllegalArgumentException("Job application not found with id: " + applicationId));
+                .orElseThrow(() -> new ResourceNotFoundException("Job application not found with id: " + applicationId));
         if (!jobApplication.getJobSeeker().getUser().getId().equals(userId)) {
             throw new IllegalArgumentException("User is not authorized to delete this job application");
         }

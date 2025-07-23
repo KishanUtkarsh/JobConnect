@@ -111,9 +111,13 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<ErrorResponseDTO> buildErrorResponse(HttpStatus status, String message, ServerWebExchange exchange) {
         String path = exchange.getRequest().getPath().value();
+
         if(message.contains("404 NOT_FOUND")) {
             message = "Resource / Api not found";
             status = HttpStatus.NOT_FOUND;
+        } else if (message.contains("405 METHOD_NOT_ALLOWED")) {
+            message = "Specified method is not allowed for this resource";
+            status = HttpStatus.METHOD_NOT_ALLOWED;
         }
 
         ErrorResponseDTO response = new ErrorResponseDTO(

@@ -34,20 +34,20 @@ public class JobApplicationJobseekerController {
         return Mono.just(jobApplicationService.applyForJob(jobApplicationRequestDTO,authentication));
     }
 
-    @GetMapping("/get-application/{applicationId}")
+    @GetMapping("/get-application")
     @Operation(summary = "Get job application by ID")
     @PreAuthorize("hasRole('JOBSEEKER')")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<JobApplicationResponseDTO> getJobApplicationById(@PathVariable("applicationId") UUID applicationId,
+    public Mono<JobApplicationResponseDTO> getJobApplicationById(@RequestParam("applicationId") UUID applicationId,
                                                                  Authentication authentication) {
         return Mono.just(jobApplicationService.getJobApplicationById(applicationId, authentication));
     }
 
-    @DeleteMapping("/delete-application/{applicationId}")
+    @DeleteMapping("/delete-application")
     @Operation(summary = "Delete a job application")
     @PreAuthorize("hasRole('JOBSEEKER')")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<String> deleteJobApplication(@PathVariable("applicationId") UUID applicationId,
+    public Mono<String> deleteJobApplication(@RequestParam("applicationId") UUID applicationId,
                                              Authentication authentication) {
         return Mono.just(jobApplicationService.deleteJobApplication(applicationId, authentication));
     }

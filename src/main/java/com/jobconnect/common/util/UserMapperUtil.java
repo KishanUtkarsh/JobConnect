@@ -12,7 +12,6 @@ import com.jobconnect.user.dto.RecruiterResponseDTO;
 import com.jobconnect.user.entity.JobSeeker;
 import com.jobconnect.user.entity.Recruiter;
 
-
 public class UserMapperUtil {
 
     private UserMapperUtil() {
@@ -81,6 +80,4 @@ public class UserMapperUtil {
         oldJobSeeker.setResume(resumeUrl);
         return oldJobSeeker;
     }
-
-
 }
