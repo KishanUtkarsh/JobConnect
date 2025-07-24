@@ -1,23 +1,18 @@
 package com.jobconnect.user.controller;
 
-import com.jobconnect.common.util.FileConverter;
 import com.jobconnect.user.dto.JobSeekerRequestDTO;
 import com.jobconnect.user.dto.JobSeekerResponseDTO;
 import com.jobconnect.user.service.JobSeekerService;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @RestController
@@ -57,12 +52,12 @@ public class JobSeekerController {
         return Mono.just(jobSeekerService.deleteJobSeeker(userId));
     }
 
-    @PostMapping(value = "/upload-resume", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/upload-resume")
     @Tag(name = "Upload Resume", description = "Upload JobSeeker's resume")
     @PreAuthorize("hasRole('JOBSEEKER')")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<String> uploadResume(@RequestPart("file") FilePart file, Authentication authentication) {
-        return Mono.just(jobSeekerService.uploadResume(FileConverter.convertToMultipartFile(file), authentication));
+    public Mono<String> uploadResume(@RequestPart("file") FilePart file, Authentication authentication) throws IOException {
+        return jobSeekerService.uploadResume(file, authentication);
     }
 
     @DeleteMapping("/delete-resume")

@@ -6,15 +6,23 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.jobconnect.common.constants.DevConstants;
 import com.jobconnect.common.exception.FileNotFoundException;
 import com.jobconnect.common.exception.FileUploadException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 
 @Slf4j
@@ -36,27 +44,37 @@ public class S3FileStorageService implements FileStorageService {
     }
 
     @Override
-    public String storeFile(MultipartFile file, String userName) {
+    public Mono<String> storeFile(FilePart file, String userName) throws FileUploadException {
 
-        String filename = file.getOriginalFilename();
+        String filename = file.filename();
         String storeFileName = userName + "_resume_" + System.currentTimeMillis() + filename.substring(filename.lastIndexOf('.'));
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(file.getSize());
-        metadata.setContentType(file.getContentType());
+        // Store the file in local first because we can't directly upload FilePart to S3
+        // FilePart is not directly compatible with S3's PutObjectRequest
+        Path tempFile = Paths.get(
+                System.getProperty("java.io.tmpdir"),
+                storeFileName
+        );
 
-        try {
-            amazonS3.putObject(new PutObjectRequest(
-                    bucketName,
-                    storeFileName,
-                    file.getInputStream(),
-                    metadata
-            ));
-            return storeFileName;
-        } catch (Exception e) {
-            // Handle exceptions such as IOException or AmazonS3Exception
-            throw new FileUploadException("Failed to store file in S3: " + e.getMessage());
-        }
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(file.headers().size());
+        metadata.setContentType(file.headers().getContentType().toString());
+
+        return file.transferTo(tempFile)
+                .then(Mono.fromCallable(() -> {
+                    File newFile = tempFile.toFile();
+                    amazonS3.putObject(
+                            new PutObjectRequest(
+                                    bucketName,
+                                    storeFileName,
+                                    new FileInputStream(newFile),
+                                    metadata
+                            )
+                    );
+                    file.delete(); // optionally delete temporary file after upload
+                    return storeFileName;
+                }));
+
     }
 
     @Override
@@ -65,10 +83,9 @@ public class S3FileStorageService implements FileStorageService {
     }
 
     @Override
-    public String deleteFile(String filename) {
+    public void deleteFile(String filename) {
         try {
             amazonS3.deleteObject(bucketName, filename);
-            return "Deleted file: " + filename;
         } catch (Exception e) {
             // Handle exceptions such as AmazonS3Exception
             log.error("Failed to delete file: {}", filename, e);

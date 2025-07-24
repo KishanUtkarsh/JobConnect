@@ -1,12 +1,13 @@
 package com.jobconnect.common.storage;
 
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.codec.multipart.FilePart;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 
 public interface FileStorageService {
-    String storeFile(MultipartFile file, String userName) throws IOException;
+    Mono<String> storeFile(FilePart file, String userName) throws IOException;
     String retrieveFile(String filename);
-    String deleteFile(String filename) throws IOException;
+    void deleteFile(String filename) throws IOException;
     String getFileUrl(String filename);
 }

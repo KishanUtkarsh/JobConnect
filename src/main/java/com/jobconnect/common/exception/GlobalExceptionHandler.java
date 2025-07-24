@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 
@@ -108,6 +109,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), exchange);
     }
 
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ErrorResponseDTO> handleIOException(IOException ex, ServerWebExchange exchange) {
+        log.error("I/O error at {}: {}", Instant.now(), ex.getMessage(), ex);
+        return buildErrorResponse(HttpStatus.NO_CONTENT, "I/O error occurred", exchange);
+    }
 
     private ResponseEntity<ErrorResponseDTO> buildErrorResponse(HttpStatus status, String message, ServerWebExchange exchange) {
         String path = exchange.getRequest().getPath().value();

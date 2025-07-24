@@ -14,10 +14,13 @@ import com.jobconnect.user.service.JobSeekerService;
 import com.jobconnect.user.service.RecruiterService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -77,23 +80,21 @@ public class JobSeekerServiceImpl implements JobSeekerService {
 
     @Override
     @Transactional
-    public String uploadResume(MultipartFile file, Authentication authentication) {
+    public Mono<String> uploadResume(FilePart file, Authentication authentication) throws IOException {
         UUID userId = (UUID) authentication.getPrincipal();
         JobSeeker jobSeeker = jobSeekerRepository.findJobSeekerByUserId(userId);
         String userName = jobSeeker.getUser().getFirstName() + "_" + jobSeeker.getUser().getLastName();
 
-        String fileName = "";
-        try{
-            fileName = fileStorageService.storeFile(file, userName);
-        }catch (Exception e){
-            log.error("Error uploading resume for JobSeeker with UserId: {}", jobSeeker.getUser().getId(), e);
-            throw new RuntimeException("Failed to upload resume: " + e.getMessage());
-        }
+        return fileStorageService.storeFile(file, userName)
+                .doOnSuccess(fileName -> {
+                    jobSeeker.setResume(fileName);
+                    jobSeekerRepository.save(jobSeeker);
+                    log.info("Resume uploaded for JobSeeker with UserId: {}", jobSeeker.getUser().getId());
+                })
+                .doOnError(e -> {
+                    log.error("Error uploading resume for JobSeeker with UserId: {}", jobSeeker.getUser().getId(), e);
+                });
 
-        jobSeeker.setResume(fileName);
-        jobSeekerRepository.save(jobSeeker);
-        log.info("Resume uploaded for JobSeeker with UserId: {}", jobSeeker.getUser().getId());
-        return fileStorageService.getFileUrl(fileName);
     }
 
     @Override
