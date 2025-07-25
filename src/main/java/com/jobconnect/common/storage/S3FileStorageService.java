@@ -56,13 +56,12 @@ public class S3FileStorageService implements FileStorageService {
                 storeFileName
         );
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(file.headers().size());
-        metadata.setContentType(file.headers().getContentType().toString());
-
         return file.transferTo(tempFile)
                 .then(Mono.fromCallable(() -> {
                     File newFile = tempFile.toFile();
+                    ObjectMetadata metadata = new ObjectMetadata();
+                    metadata.setContentLength(newFile.length());
+                    metadata.setContentType(Files.probeContentType(tempFile));
                     amazonS3.putObject(
                             new PutObjectRequest(
                                     bucketName,

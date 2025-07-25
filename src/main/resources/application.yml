@@ -3,4 +3,4 @@ spring:
     name: JobConnect
 
   profiles:
-    active: dev
+    active: prod
