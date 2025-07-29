@@ -1,0 +1,37 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Maven/Java build output
+target/
+build/
+*.class
+
+# IDE/editor configs
+.idea/
+.vscode/
+*.iml
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.bak
+
+# Environment and secret files
+.env
+*.env
+*.aws/
+*.credentials/
+
+# Docker compose override files (optional)
+docker-compose.override.yml
+
+# Exclude test sources (optional, if not needed in image)
+src/test/

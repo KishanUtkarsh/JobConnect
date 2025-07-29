@@ -1,0 +1,34 @@
+## Dockerfile for a development environment using OpenJDK 21
+
+# Using maven build for a Java application
+FROM maven:3.9.8-eclipse-temurin-21 AS build
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the pom.xml and source code into the container
+COPY pom.xml .
+RUN mvn dependency:go-offline   # Download dependencies to avoid downloading them every time
+
+COPY src ./src
+
+# Build the application using Maven
+RUN mvn clean package -DskipTests
+
+# Use OpenJDK 21 as the base image
+FROM openjdk:21-jdk-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the built application from the build stage
+COPY --from=build /app/target/JobConnect-*.jar app.jar
+
+# Run the application when the container starts
+CMD ["java", "-jar", "app.jar"]
+
+# Expose port 8080 for the application
+EXPOSE 8080
+
+
+

@@ -1,12 +1,10 @@
 package com.jobconnect.common.testingApi;
 
 import com.jobconnect.common.storage.FilePartStorage;
-import com.jobconnect.common.storage.LocalFileStorageService;
+import com.jobconnect.common.storage.S3FileStorageService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -16,21 +14,25 @@ import java.io.IOException;
 @Tag(name = "Testing Controller", description = "Testing related operations")
 public class TestingController {
 
-    @Autowired
-    private FilePartStorage filePartStorage;
+    FilePartStorage filePartStorage;
 
-    @Autowired
-    private LocalFileStorageService localFileStorageService;
+    S3FileStorageService s3FileStorageService;
 
-
-    // This controller is used for testing purposes only.
-    // It can be used to test various functionalities without affecting the main application logic.
-    // Add your testing methods here as needed.
+    public TestingController(FilePartStorage filePartStorage, S3FileStorageService s3FileStorageService) {
+        this.filePartStorage = filePartStorage;
+        this.s3FileStorageService = s3FileStorageService;
+    }
 
     @GetMapping("/upload")
     public Mono<String> filePartTest(@RequestPart("filePart") FilePart filePart) throws IOException {
         String userName = "testUser"; // Replace with actual username logic if needed
         return filePartStorage.storeFile(filePart, userName);
+    }
+
+    @GetMapping("/s3-upload")
+    public Mono<String> s3FilePartTest(@RequestPart("filePart") FilePart filePart) throws IOException {
+        String userName = "testUser"; // Replace with actual username logic if needed
+        return s3FileStorageService.storeFile(filePart, userName);
     }
 
 }

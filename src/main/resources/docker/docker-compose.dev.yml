@@ -1,0 +1,50 @@
+version: '4'
+
+services:
+
+  job_app:
+    container_name: job_app
+    build:
+      context: ../../../..
+      dockerfile: src/main/resources/docker/Dockerfile.dev
+    ports:
+      - "8080:8080"
+    env_file:
+      - ../env/.env.dev
+    networks:
+      - jobConnect_network
+    depends_on:
+      - postgres
+      - redis
+
+  redis:
+    image: "redis:7.2-alpine"
+    restart: always
+    container_name: redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - /redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - redis_data:/data
+
+  postgres:
+    image: postgres:17.0
+    restart: always
+    container_name: postgres
+    ports:
+      - "1102:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin@123
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  jobConnect_network:
+    driver: bridge
+
+volumes:
+  redis_data:
+  postgres_data:

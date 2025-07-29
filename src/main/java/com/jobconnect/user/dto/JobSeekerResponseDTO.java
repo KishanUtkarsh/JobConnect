@@ -1,6 +1,8 @@
 package com.jobconnect.user.dto;
 
 import com.jobconnect.job.enums.EmploymentType;
+
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -11,5 +13,6 @@ public record JobSeekerResponseDTO(
         Set<String> skills,
         String degree,
         EmploymentType employmentType
+
 ) {
 }
